@@ -6,7 +6,17 @@
   "repository": "__",
   "author": "Akshay Nair <phenax5@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "runtime": "ts-node src/runtime.ts",
+    "watch": "nodemon --exec 'clear && yarn runtime' -e .ts"
+  },
   "dependencies": {
+    "@types/node": "^18.11.18",
+    "ts-morph": "^17.0.1",
+    "ts-node": "^10.9.1",
     "typescript": "^4.9.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
   }
 }
