@@ -1,6 +1,6 @@
 import { Project, ScriptTarget, Type, Node, StringLiteral, TypeFormatFlags, SyntaxKind } from 'ts-morph'
 import path from 'path'
-import fs from 'fs'
+import { promises as fs } from 'fs'
 
 const project = new Project({
   compilerOptions: {
@@ -48,26 +48,26 @@ const createHash = () =>
 const match = <K extends string, R>(k: K | undefined, pattern: { [key in K | '_']: () => R }) =>
   k && pattern[k] ? pattern[k]() : pattern._()
 
-const accumulateResults = (effTyp: Type, node: Node): string[] => {
+const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> => {
   const name = effTyp.getSymbol()?.getName()
 
   return match(name, {
-    ReadFile: () => {
+    ReadFile: async () => {
       const [pathTyp] = effTyp.getTypeArguments()
       const filePath = JSON.parse(typeToString(pathTyp))
-      const contents = fs.readFileSync(filePath, 'utf-8')
+      const contents = await fs.readFile(filePath, 'utf-8')
       const hash = createHash()
       addResult(hash, JSON.stringify(contents))
       return [hash]
     },
 
-    ChainIO: () => {
+    ChainIO: async () => {
       const inputTyp = effTyp.getProperty('input')?.getTypeAtLocation(node)
-      const inputResults = inputTyp && accumulateResults(inputTyp, node)
-      return [...(inputResults ?? [])]
+      const inputResults = inputTyp && await accumulateResults(inputTyp, node)
+      return inputResults ?? []
     },
 
-    GetEnv: () => {
+    GetEnv: async () => {
       const [envTyp] = effTyp.getTypeArguments()
       const envName = JSON.parse(typeToString(envTyp))
       const hash = createHash()
@@ -75,44 +75,44 @@ const accumulateResults = (effTyp: Type, node: Node): string[] => {
       return [hash]
     },
 
-    _: () => {
+    _: async () => {
       console.log(`${name} result effect is unhandled`)
       return []
     },
   })
 }
 
-const evalAccumulator = (effNode: Node, node: Node) => {
+const evalAccumulator = async (effNode: Node, node: Node) => {
   const effTyp = effNode.getType()
   const name = effTyp.getSymbol()?.getName()
 
   return match(name, {
-    Print: () => {
+    Print: async () => {
       console.log(...effTyp.getTypeArguments().map(typeToString));
     },
 
-    ReadFile: () => {
-      const [hash] = accumulateResults(effTyp, node)
+    ReadFile: async () => {
+      const [hash] = await accumulateResults(effTyp, node)
       effNode.replaceWithText(`${RESULT_TYPE_NAME}[${JSON.stringify(hash)}]`)
     },
 
-    WriteFile: () => {
+    WriteFile: async () => {
       const [pathTyp, contentsTyp] = effTyp.getTypeArguments()
       const filePath = JSON.parse(typeToString(pathTyp))
       const contents = JSON.parse(typeToString(contentsTyp))
-      fs.writeFileSync(filePath, contents)
+      await fs.writeFile(filePath, contents)
     },
 
-    ChainIO: () => {
+    ChainIO: async () => {
       const inputTyp = effTyp.getProperty('input')?.getTypeAtLocation(node)
       const chainToKind = effTyp.getProperty('chainTo')?.getTypeAtLocation(node)
-      const [hashRes] = inputTyp ? accumulateResults(inputTyp, node) : []
+      const [hashRes] = inputTyp ? await accumulateResults(inputTyp, node) : []
       const chainRes = `(${typeToString(chainToKind)} & { input: ${RESULT_TYPE_NAME}[${JSON.stringify(hashRes)}]['output'] })['return']`
       const updateEffNode = effNode.replaceWithText(chainRes)
-      evalAccumulator(updateEffNode, node)
+      await evalAccumulator(updateEffNode, node)
     },
 
-    _: () => {
+    _: async () => {
       console.log(effNode.print())
       console.log('TTTT', typeToString(effTyp))
       console.log(`${name} effect is unhandled`)
@@ -120,29 +120,42 @@ const evalAccumulator = (effNode: Node, node: Node) => {
   })
 }
 
-if (typeRefNode) {
-  const resultType = entryPoint?.getType()
+const main = async () => {
+  if (typeRefNode) {
+    const resultType = entryPoint?.getType()
 
-  if (typeRefNode && entryPoint && resultType?.getSymbol()?.getName() === 'Program') {
-    const exitCodeTy = getPropertyType(typeRefNode, 'exitCode')
-    const effectTypes = getPropertyType(typeRefNode, 'effects')
-    if (effectTypes?.isTuple()) {
-      const effectNodes = entryPoint.getChildrenOfKind(SyntaxKind.TypeReference)
-        .flatMap(n => n.getChildrenOfKind(SyntaxKind.TupleType))
-        .flatMap(tt => tt.getChildrenOfKind(SyntaxKind.SyntaxList))
-        .flatMap(n => n.getChildren())
-        .filter(n => !n.isKind(SyntaxKind.CommaToken))
+    if (typeRefNode && entryPoint && resultType?.getSymbol()?.getName() === 'Program') {
+      const exitCodeTy = getPropertyType(typeRefNode, 'exitCode')
+      const effectTypes = getPropertyType(typeRefNode, 'effects')
+      if (effectTypes?.isTuple()) {
+        const effectNodes = entryPoint.getChildrenOfKind(SyntaxKind.TypeReference)
+          .flatMap(n => n.getChildrenOfKind(SyntaxKind.TupleType))
+          .flatMap(tt => tt.getChildrenOfKind(SyntaxKind.SyntaxList))
+          .flatMap(n => n.getChildren())
+          .filter(n => !n.isKind(SyntaxKind.CommaToken))
 
-      effectNodes.flatMap(n => evalAccumulator(n, typeRefNode))
+        for (const n of effectNodes) {
+          await evalAccumulator(n, typeRefNode)
+        }
+      }
+
+      const exitCode = exitCodeTy?.getLiteralValue() as number
+
+      if (exitCode !== 0) {
+        process.exit(exitCode)
+      }
+    } else {
+      const ty = typeChecker.getTypeAtLocation(typeRefNode)
+      console.log(typeToString(ty))
     }
-
-    process.exit(exitCodeTy?.getLiteralValue() as number)
-  } else {
-    const ty = typeChecker.getTypeAtLocation(typeRefNode)
-    console.log(typeToString(ty))
   }
 }
 
-console.log(entryPoint?.print())
-console.log(statement?.print())
+main()
+  .then(() => {
+    // console.log(entryPoint?.print())
+    // console.log(statement?.print())
+    process.exit(0)
+  })
+  .catch(e => (console.error(e), process.exit(1)))
 
