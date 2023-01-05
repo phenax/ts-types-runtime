@@ -39,11 +39,11 @@ const typeRefNode = entryPoint?.getLastChild()
 
 const RESULT_TYPE_NAME = '__$result'
 
-const [statement] = sourceFile.addStatements(`type ${RESULT_TYPE_NAME} = {}`)
+const [resultTypeNode] = sourceFile.addStatements(`type ${RESULT_TYPE_NAME} = {}`)
 
 const addResult = (name: string, ty: string) => {
-  if (statement.isKind(SyntaxKind.TypeAliasDeclaration)) {
-    const value = statement.getChildAtIndex(3)
+  if (resultTypeNode.isKind(SyntaxKind.TypeAliasDeclaration)) {
+    const value = resultTypeNode.getChildAtIndex(3)
     if (value.isKind(SyntaxKind.TypeLiteral)) {
       value.addProperty({
         name: JSON.stringify(name),
@@ -96,9 +96,9 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
     JsExpr: async () => {
       const [exprTyp] = effTyp.getTypeArguments()
       const exprStr = JSON.parse(typeToString(exprTyp))
-      const result = eval(exprStr)
+      const result = eval(`JSON.stringify(${exprStr})`)
       const hash = createHash()
-      addResult(hash, `${JSON.stringify(result)}`)
+      addResult(hash, `${result}`)
       return [hash]
     },
 
@@ -121,7 +121,7 @@ const evalAccumulator = async (effNode: Node, node: Node) => {
     Debug: async () => {
       const [labelTyp, valueTyp] = effTyp.getTypeArguments()
       const label = JSON.parse(typeToString(labelTyp))
-      const value = JSON.parse(typeToString(valueTyp))
+      const value = typeToString(valueTyp)
       console.log(label, value)
     },
 
@@ -187,7 +187,7 @@ const main = async () => {
 main()
   .then(() => {
     // console.log(entryPoint?.print())
-    // console.log(statement?.print())
+    // console.log(resultTypeNode?.print())
     process.exit(0)
   })
   .catch(e => (console.error(e), process.exit(1)))
