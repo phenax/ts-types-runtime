@@ -13,27 +13,22 @@ export interface Program<Effs extends Effect, ExitCode extends number = 0> {
   exitCode: ExitCode,
 }
 
-export interface Kind<Inp = unknown, Out = unknown> {
+export interface Kind1<Inp = unknown, Out = unknown> {
   input: Inp
   return: Out
 }
 
-export interface WriteFileC extends Kind<string> {
-  return: WriteFile<"./somefile.txt", this['input']>
-}
-
-export interface ChainIO<Eff extends EffectAtom, Fn extends Kind> extends EffectAtom {
+export interface ChainIO<Eff extends EffectAtom, Fn extends Kind1> extends EffectAtom {
   input: Eff
   chainTo: Fn
 }
 
+export interface PrintK extends Kind1<string> {
+  return: Print<this['input']>
+}
+
 export type main = Program<[
   [1, 2, 3] extends infer Res ? Print<Res> : never,
-  Print<"bye bye">,
-  ReadFile<"./.gitignore">,
-
-  ChainIO<
-    ReadFile<"./default.nix">,
-    WriteFileC
-  >,
+  Print<`wow: ${string} -> ${'helo'}`>,
+  ChainIO<ReadFile<"./default.nix">, PrintK>,
 ]>

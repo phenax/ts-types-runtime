@@ -70,7 +70,6 @@ const evalAccumulator = (effNode: Node, node: Node) => {
   const name = effTyp.getSymbol()?.getName()
 
   switch (name) {
-    case 'PrintString':
     case 'Print':
       console.log(...effTyp.getTypeArguments().map(typeToString));
       return null
@@ -90,7 +89,6 @@ const evalAccumulator = (effNode: Node, node: Node) => {
     case 'ChainIO':
       const inputTyp = effTyp.getProperty('input')?.getTypeAtLocation(node)
       const chainToKind = effTyp.getProperty('chainTo')?.getTypeAtLocation(node)
-      console.log('wow')
 
       const [hashRes] = inputTyp ? accumulateResults(inputTyp, node) : []
       const chainRes = `(${typeToString(chainToKind)} & { input: ${RESULT_TYPE_NAME}[${JSON.stringify(hashRes)}]['output'] })['return']`
@@ -113,8 +111,6 @@ if (typeRefNode) {
     const exitCodeTy = getPropertyType(typeRefNode, 'exitCode')
     const effectTypes = getPropertyType(typeRefNode, 'effects')
     if (effectTypes?.isTuple()) {
-      console.log('Effects to run', effectTypes?.getTupleElements().map(eff => typeToString(eff)))
-
       const effectNodes = entryPoint.getChildrenOfKind(SyntaxKind.TypeReference)
         .flatMap(n => n.getChildrenOfKind(SyntaxKind.TupleType))
         .flatMap(tt => tt.getChildrenOfKind(SyntaxKind.SyntaxList))
@@ -124,7 +120,7 @@ if (typeRefNode) {
       effectNodes.flatMap(n => evalAccumulator(n, typeRefNode))
     }
 
-    console.log('Exited with code', exitCodeTy?.getLiteralValue())
+    process.exit(exitCodeTy?.getLiteralValue() as number)
   } else {
     const ty = typeChecker.getTypeAtLocation(typeRefNode)
     console.log(typeToString(ty))
