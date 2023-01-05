@@ -3,12 +3,16 @@ export type Effect = EffectAtom[]
 
 export interface PrintString<_ extends string> extends EffectAtom { }
 export interface Print<_ extends any> extends EffectAtom { }
-// interface Debug<_ extends string, T> extends EffectAtom<T> { }
+export interface Debug<_ extends string, T> extends EffectAtom<T> { }
 
 export interface WriteFile<_Path extends string, _Content extends string> extends EffectAtom { }
 export interface ReadFile<_Path extends string> extends EffectAtom<string> { }
 
 export interface GetEnv<_Name extends string> extends EffectAtom<string> { }
+
+export interface ReadLine extends EffectAtom<string> { }
+
+export interface JsExpr<_Expr extends string> extends EffectAtom<any> {}
 
 export interface Program<Effs extends Effect, ExitCode extends number = 0> {
   effects: Effs,
@@ -25,13 +29,21 @@ export interface ChainIO<Eff extends EffectAtom, Fn extends Kind1> extends Effec
   chainTo: Fn
 }
 
-export interface PrintK extends Kind1<string | undefined> {
-  return: Print<this['input']>
+interface PrintK<Label extends string = ""> extends Kind1<unknown> {
+  return: Debug<Label, this['input']>
 }
+
+// interface WithInputK extends Kind1<string> {
+//   return: ChainIO<ReadLine, PrintK<this['input']>>
+// }
+
+// ChainIO<ReadLine, WithInputK>,
+// ChainIO<ReadFile<"./default.nix">, PrintK>,
+// Print<"Your name?:">,
+// ChainIO<ReadLine, PrintK<"Hello,">>,
 
 export type main = Program<[
   [1, 2, 3] extends infer Res ? Print<Res> : never,
-  Print<`wow: ${string} -> ${'helo'}`>,
   ChainIO<GetEnv<"NODE_ENV">, PrintK>,
-  ChainIO<ReadFile<"./default.nix">, PrintK>,
+  ChainIO<JsExpr<"{ boobaa: [5 * 3, 5 * 2] }">, PrintK>,
 ]>

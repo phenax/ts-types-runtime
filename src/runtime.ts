@@ -1,6 +1,17 @@
 import { Project, ScriptTarget, Type, Node, StringLiteral, TypeFormatFlags, SyntaxKind } from 'ts-morph'
 import path from 'path'
 import { promises as fs } from 'fs'
+import readline from 'readline';
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  terminal: false
+});
+
+const readLineFromStdin = (): Promise<string> => new Promise((res) => {
+  rl.on('line', res)
+})
 
 const project = new Project({
   compilerOptions: {
@@ -75,6 +86,22 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
       return [hash]
     },
 
+    ReadLine: async () => {
+      const line = await readLineFromStdin()
+      const hash = createHash()
+      addResult(hash, `${JSON.stringify(line)}`)
+      return [hash]
+    },
+
+    JsExpr: async () => {
+      const [exprTyp] = effTyp.getTypeArguments()
+      const exprStr = JSON.parse(typeToString(exprTyp))
+      const result = eval(exprStr)
+      const hash = createHash()
+      addResult(hash, `${JSON.stringify(result)}`)
+      return [hash]
+    },
+
     _: async () => {
       console.log(`${name} result effect is unhandled`)
       return []
@@ -91,6 +118,13 @@ const evalAccumulator = async (effNode: Node, node: Node) => {
       console.log(...effTyp.getTypeArguments().map(typeToString));
     },
 
+    Debug: async () => {
+      const [labelTyp, valueTyp] = effTyp.getTypeArguments()
+      const label = JSON.parse(typeToString(labelTyp))
+      const value = JSON.parse(typeToString(valueTyp))
+      console.log(label, value)
+    },
+
     ReadFile: async () => {
       const [hash] = await accumulateResults(effTyp, node)
       effNode.replaceWithText(`${RESULT_TYPE_NAME}[${JSON.stringify(hash)}]`)
@@ -104,9 +138,8 @@ const evalAccumulator = async (effNode: Node, node: Node) => {
     },
 
     ChainIO: async () => {
-      const inputTyp = effTyp.getProperty('input')?.getTypeAtLocation(node)
       const chainToKind = effTyp.getProperty('chainTo')?.getTypeAtLocation(node)
-      const [hashRes] = inputTyp ? await accumulateResults(inputTyp, node) : []
+      const [hashRes] = await accumulateResults(effTyp, node)
       const chainRes = `(${typeToString(chainToKind)} & { input: ${RESULT_TYPE_NAME}[${JSON.stringify(hashRes)}]['output'] })['return']`
       const updateEffNode = effNode.replaceWithText(chainRes)
       await evalAccumulator(updateEffNode, node)
