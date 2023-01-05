@@ -2,6 +2,7 @@ import { Project, ScriptTarget, Type, Node, StringLiteral, TypeFormatFlags, Synt
 import path from 'path'
 import { promises as fs } from 'fs'
 import readline from 'readline';
+import { stdout } from 'process';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -86,6 +87,12 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
       return [hash]
     },
 
+    GetArgs: async () => {
+      const hash = createHash()
+      addResult(hash, `${JSON.stringify(process.argv.slice(2))}`)
+      return [hash]
+    },
+
     ReadLine: async () => {
       const line = await readLineFromStdin()
       const hash = createHash()
@@ -116,6 +123,13 @@ const evalAccumulator = async (effNode: Node, node: Node) => {
   return match(name, {
     Print: async () => {
       console.log(...effTyp.getTypeArguments().map(typeToString));
+    },
+
+    PutString: async () => {
+      const [strinTyp] = effTyp.getTypeArguments()
+      const typString = typeToString(strinTyp)
+      const string = JSON.parse(!typString.startsWith('"') ? `"${typString}"` : typString)
+      stdout.write(string);
     },
 
     Debug: async () => {

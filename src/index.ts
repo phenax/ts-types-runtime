@@ -1,7 +1,7 @@
 export interface EffectAtom<T = unknown> { output: T }
 export type Effect = EffectAtom[]
 
-export interface PrintString<_ extends string> extends EffectAtom { }
+export interface PutString<_ extends string> extends EffectAtom { }
 export interface Print<_ extends any> extends EffectAtom { }
 export interface Debug<_ extends string, T> extends EffectAtom<T> { }
 
@@ -9,6 +9,7 @@ export interface WriteFile<_Path extends string, _Content extends string> extend
 export interface ReadFile<_Path extends string> extends EffectAtom<string> { }
 
 export interface GetEnv<_Name extends string> extends EffectAtom<string> { }
+export interface GetArgs extends EffectAtom<string[]> { }
 
 export interface ReadLine extends EffectAtom<string> { }
 
@@ -37,13 +38,14 @@ interface PrintK<Label extends string = ""> extends Kind1<unknown> {
 //   return: ChainIO<ReadLine, PrintK<this['input']>>
 // }
 
-// ChainIO<ReadLine, WithInputK>,
-// ChainIO<ReadFile<"./default.nix">, PrintK>,
-// Print<"Your name?:">,
-// ChainIO<ReadLine, PrintK<"Hello,">>,
-
 export type main = Program<[
+  ChainIO<GetArgs, PrintK>,
   [1, 2, 3] extends infer Res ? Print<Res> : never,
   ChainIO<GetEnv<"NODE_ENV">, PrintK>,
   ChainIO<JsExpr<"{ boobaa: [5 * 3, 5 * 2] }">, PrintK>,
+  // ChainIO<ReadLine, WithInputK>,
+  ChainIO<ReadFile<"./default.nix">, PrintK>,
+  PutString<"Your name? ">,
+  ChainIO<ReadLine, PrintK<"Hello,">>,
 ]>
+
