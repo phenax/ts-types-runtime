@@ -12,8 +12,6 @@ const typeChecker = project.getTypeChecker()
 
 const sourceFile = project.addSourceFileAtPath(path.resolve("./src/index.ts"))
 
-sourceFile.addStatements('type Foobar = "aaaaaaaa";')
-
 const entryPoint = sourceFile.getExportedDeclarations().get('main')?.[0]
 
 const typeToString = (ty: Type | undefined): string =>
@@ -44,64 +42,69 @@ const addResult = (name: string, ty: string) => {
   }
 }
 
+const match = <K extends string, R>(k: K | undefined, pattern: { [key in K | '_']: () => R }) =>
+  k && pattern[k] ? pattern[k]() : pattern._()
+
 const accumulateResults = (effTyp: Type, node: Node): string[] => {
   const name = effTyp.getSymbol()?.getName()
 
-  switch (name) {
-    case 'ReadFile':
+  return match(name, {
+    ReadFile: () => {
       const [pathTyp] = effTyp.getTypeArguments()
       const filePath = JSON.parse(typeToString(pathTyp))
       const contents = fs.readFileSync(filePath, 'utf-8')
       const hash = Math.random().toFixed(8).slice(2)
       addResult(hash, JSON.stringify(contents))
       return [hash]
+    },
 
-    case 'ChainIO':
+    ChainIO: () => {
       const inputTyp = effTyp.getProperty('input')?.getTypeAtLocation(node)
       const inputResults = inputTyp && accumulateResults(inputTyp, node)
       return [...(inputResults ?? [])]
-    default:
+    },
+
+    _: () => {
+      console.log(`${name} effect is unhandled`)
       return []
-  }
+    },
+  })
 }
 
 const evalAccumulator = (effNode: Node, node: Node) => {
   const effTyp = effNode.getType()
   const name = effTyp.getSymbol()?.getName()
 
-  switch (name) {
-    case 'Print':
+  return match(name, {
+    Print: () => {
       console.log(...effTyp.getTypeArguments().map(typeToString));
-      return null
+    },
 
-    case 'ReadFile':
+    ReadFile: () => {
       const [hash] = accumulateResults(effTyp, node)
       effNode.replaceWithText(`${RESULT_TYPE_NAME}[${JSON.stringify(hash)}]`)
-      return null
-
-    case 'WriteFile':
+    },
+    WriteFile: () => {
       const [pathTyp, contentsTyp] = effTyp.getTypeArguments()
       const filePath = JSON.parse(typeToString(pathTyp))
       const contents = JSON.parse(typeToString(contentsTyp))
       fs.writeFileSync(filePath, contents)
-      return null
-
-    case 'ChainIO':
+    },
+    ChainIO: () => {
       const inputTyp = effTyp.getProperty('input')?.getTypeAtLocation(node)
       const chainToKind = effTyp.getProperty('chainTo')?.getTypeAtLocation(node)
-
       const [hashRes] = inputTyp ? accumulateResults(inputTyp, node) : []
       const chainRes = `(${typeToString(chainToKind)} & { input: ${RESULT_TYPE_NAME}[${JSON.stringify(hashRes)}]['output'] })['return']`
 
       const updateEffNode = effNode.replaceWithText(chainRes)
 
       evalAccumulator(updateEffNode, node)
-      return null
-    default:
-      console.log(`${name} effect is unhandled`)
-  }
+    },
 
-  return null
+    _: () => {
+      console.log(`${name} effect is unhandled`)
+    }
+  })
 }
 
 if (typeRefNode) {
