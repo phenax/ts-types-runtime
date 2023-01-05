@@ -8,6 +8,8 @@ export interface Print<_ extends any> extends EffectAtom { }
 export interface WriteFile<_Path extends string, _Content extends string> extends EffectAtom { }
 export interface ReadFile<_Path extends string> extends EffectAtom<string> { }
 
+export interface GetEnv<_Name extends string> extends EffectAtom<string> { }
+
 export interface Program<Effs extends Effect, ExitCode extends number = 0> {
   effects: Effs,
   exitCode: ExitCode,
@@ -23,12 +25,13 @@ export interface ChainIO<Eff extends EffectAtom, Fn extends Kind1> extends Effec
   chainTo: Fn
 }
 
-export interface PrintK extends Kind1<string> {
+export interface PrintK extends Kind1<string | undefined> {
   return: Print<this['input']>
 }
 
 export type main = Program<[
   [1, 2, 3] extends infer Res ? Print<Res> : never,
   Print<`wow: ${string} -> ${'helo'}`>,
+  ChainIO<GetEnv<"NODE_ENV">, PrintK>,
   ChainIO<ReadFile<"./default.nix">, PrintK>,
 ]>

@@ -42,6 +42,9 @@ const addResult = (name: string, ty: string) => {
   }
 }
 
+const createHash = () =>
+  Math.random().toFixed(8).slice(2)
+
 const match = <K extends string, R>(k: K | undefined, pattern: { [key in K | '_']: () => R }) =>
   k && pattern[k] ? pattern[k]() : pattern._()
 
@@ -53,7 +56,7 @@ const accumulateResults = (effTyp: Type, node: Node): string[] => {
       const [pathTyp] = effTyp.getTypeArguments()
       const filePath = JSON.parse(typeToString(pathTyp))
       const contents = fs.readFileSync(filePath, 'utf-8')
-      const hash = Math.random().toFixed(8).slice(2)
+      const hash = createHash()
       addResult(hash, JSON.stringify(contents))
       return [hash]
     },
@@ -64,8 +67,16 @@ const accumulateResults = (effTyp: Type, node: Node): string[] => {
       return [...(inputResults ?? [])]
     },
 
+    GetEnv: () => {
+      const [envTyp] = effTyp.getTypeArguments()
+      const envName = JSON.parse(typeToString(envTyp))
+      const hash = createHash()
+      addResult(hash, `${JSON.stringify(process.env[envName] ?? '')}`)
+      return [hash]
+    },
+
     _: () => {
-      console.log(`${name} effect is unhandled`)
+      console.log(`${name} result effect is unhandled`)
       return []
     },
   })
@@ -84,24 +95,26 @@ const evalAccumulator = (effNode: Node, node: Node) => {
       const [hash] = accumulateResults(effTyp, node)
       effNode.replaceWithText(`${RESULT_TYPE_NAME}[${JSON.stringify(hash)}]`)
     },
+
     WriteFile: () => {
       const [pathTyp, contentsTyp] = effTyp.getTypeArguments()
       const filePath = JSON.parse(typeToString(pathTyp))
       const contents = JSON.parse(typeToString(contentsTyp))
       fs.writeFileSync(filePath, contents)
     },
+
     ChainIO: () => {
       const inputTyp = effTyp.getProperty('input')?.getTypeAtLocation(node)
       const chainToKind = effTyp.getProperty('chainTo')?.getTypeAtLocation(node)
       const [hashRes] = inputTyp ? accumulateResults(inputTyp, node) : []
       const chainRes = `(${typeToString(chainToKind)} & { input: ${RESULT_TYPE_NAME}[${JSON.stringify(hashRes)}]['output'] })['return']`
-
       const updateEffNode = effNode.replaceWithText(chainRes)
-
       evalAccumulator(updateEffNode, node)
     },
 
     _: () => {
+      console.log(effNode.print())
+      console.log('TTTT', typeToString(effTyp))
       console.log(`${name} effect is unhandled`)
     }
   })
@@ -131,4 +144,5 @@ if (typeRefNode) {
 }
 
 console.log(entryPoint?.print())
+console.log(statement?.print())
 
