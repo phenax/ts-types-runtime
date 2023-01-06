@@ -43,11 +43,11 @@ const RESULT_TYPE_NAME = '__$result'
 
 const [resultTypeNode] = sourceFile.addStatements(`type ${RESULT_TYPE_NAME} = {}`)
 
-const addResult = (name: string, ty: string) => {
+const addResult = (name: string, ty: string): Node | undefined => {
   if (resultTypeNode.isKind(SyntaxKind.TypeAliasDeclaration)) {
     const value = resultTypeNode.getChildAtIndex(3)
     if (value.isKind(SyntaxKind.TypeLiteral)) {
-      value.addProperty({
+      return value.addProperty({
         name: JSON.stringify(name),
         type: `{ output: ${ty} }`,
       })
@@ -62,6 +62,28 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
   const name = effTyp.getSymbol()?.getName()
 
   return match(name, {
+    Print: async () => {
+      console.log(...effTyp.getTypeArguments().map(typeToString));
+      return []
+    },
+
+    PutString: async () => {
+      const [strinTyp] = effTyp.getTypeArguments()
+      const typString = typeToString(strinTyp)
+      const string = JSON.parse(!typString.startsWith('"') ? `"${typString}"` : typString)
+      stdout.write(string);
+      return []
+    },
+
+    Debug: async () => {
+      const [labelTyp, valueTyp] = effTyp.getTypeArguments()
+      const label = JSON.parse(typeToString(labelTyp))
+      const value = typeToString(valueTyp)
+      console.log(label, value)
+      // TODO: Return value
+      return []
+    },
+
     ReadFile: async () => {
       const [pathTyp] = effTyp.getTypeArguments()
       const filePath = JSON.parse(typeToString(pathTyp))
@@ -71,10 +93,26 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
       return [hash]
     },
 
+    WriteFile: async () => {
+      const [pathTyp, contentsTyp] = effTyp.getTypeArguments()
+      const filePath = JSON.parse(typeToString(pathTyp))
+      const contents = JSON.parse(typeToString(contentsTyp))
+      await fs.writeFile(filePath, contents)
+      return []
+    },
+
     Bind: async () => {
-      const inputTyp = effTyp.getProperty('input')?.getTypeAtLocation(node)
-      const inputResults = inputTyp && await accumulateResults(inputTyp, node)
-      return inputResults ?? []
+      const [inputTyp, chainToKind] = effTyp.getTypeArguments()
+      const [resultKey] = inputTyp ? await accumulateResults(inputTyp, node) : []
+
+      const hash = uuid()
+      const compNode = addResult(hash,
+        `(${typeToString(chainToKind)} & { input: ${RESULT_TYPE_NAME}[${JSON.stringify(resultKey)}]['output'] })['return']`)
+      const compTyp = compNode?.getType().getProperty('output')?.getTypeAtLocation(node)
+
+      if (compTyp)
+        return accumulateResults(compTyp, node)
+      return []
     },
 
     GetEnv: async () => {
@@ -107,6 +145,20 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
       return [hash]
     },
 
+    Seq: async () => {
+      const [effectTyps] = effTyp.getTypeArguments()
+      const effectResults: string[] = []
+      for (const item of effectTyps?.getTupleElements() ?? []) {
+        effectResults.push(...(await accumulateResults(item, node)))
+      }
+
+      const hash = uuid()
+      addResult(hash, `[
+        ${effectResults.map(r => `${RESULT_TYPE_NAME}[${JSON.stringify(r)}]`).join(', ')}
+      ]`)
+      return [hash]
+    },
+
     _: async () => {
       console.log(`${name} result effect is unhandled`)
       return []
@@ -114,58 +166,10 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
   })
 }
 
-const evalAccumulator = async (effNode: Node, node: Node) => {
-  const effTyp = effNode.getType()
-  const name = effTyp.getSymbol()?.getName()
-
-  return match(name, {
-    Print: async () => {
-      console.log(...effTyp.getTypeArguments().map(typeToString));
-    },
-
-    PutString: async () => {
-      const [strinTyp] = effTyp.getTypeArguments()
-      const typString = typeToString(strinTyp)
-      const string = JSON.parse(!typString.startsWith('"') ? `"${typString}"` : typString)
-      stdout.write(string);
-    },
-
-    Debug: async () => {
-      const [labelTyp, valueTyp] = effTyp.getTypeArguments()
-      const label = JSON.parse(typeToString(labelTyp))
-      const value = typeToString(valueTyp)
-      console.log(label, value)
-    },
-
-    ReadFile: async () => {
-      const [hash] = await accumulateResults(effTyp, node)
-      effNode.replaceWithText(`${RESULT_TYPE_NAME}[${JSON.stringify(hash)}]`)
-    },
-
-    WriteFile: async () => {
-      const [pathTyp, contentsTyp] = effTyp.getTypeArguments()
-      const filePath = JSON.parse(typeToString(pathTyp))
-      const contents = JSON.parse(typeToString(contentsTyp))
-      await fs.writeFile(filePath, contents)
-    },
-
-    Bind: async () => {
-      const chainToKind = effTyp.getProperty('chainTo')?.getTypeAtLocation(node)
-      const [hashRes] = await accumulateResults(effTyp, node)
-      const chainRes = `(${typeToString(chainToKind)} & { input: ${RESULT_TYPE_NAME}[${JSON.stringify(hashRes)}]['output'] })['return']`
-      const updateEffNode = effNode.replaceWithText(chainRes)
-      await evalAccumulator(updateEffNode, node)
-    },
-
-    ReplacePlaceholders: async () => { },
-
-    _: async () => {
-      console.log(effNode.print())
-      console.log('TTTT', typeToString(effTyp))
-      console.log(`${name} effect is unhandled`)
-    }
-  })
-}
+// const evalAccumulator = async (effNode: Node, node: Node) => {
+//   const effTyp = effNode.getType()
+//   await accumulateResults(effTyp, node)
+// }
 
 const main = async () => {
   if (typeRefNode) {
@@ -175,14 +179,8 @@ const main = async () => {
       const exitCodeTy = getPropertyType(typeRefNode, 'exitCode')
       const effectTypes = getPropertyType(typeRefNode, 'effects')
       if (effectTypes?.isTuple()) {
-        const effectNodes = entryPoint.getChildrenOfKind(SyntaxKind.TypeReference)
-          .flatMap(n => n.getChildrenOfKind(SyntaxKind.TupleType))
-          .flatMap(tt => tt.getChildrenOfKind(SyntaxKind.SyntaxList))
-          .flatMap(n => n.getChildren())
-          .filter(n => !n.isKind(SyntaxKind.CommaToken))
-
-        for (const n of effectNodes) {
-          await evalAccumulator(n, typeRefNode)
+        for (const typ of effectTypes.getTupleElements()) {
+          await accumulateResults(typ, typeRefNode)
         }
       }
 

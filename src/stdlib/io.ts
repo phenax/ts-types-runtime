@@ -16,3 +16,7 @@ export interface Bind<Eff extends EffectAtom, Fn extends Kind1> extends EffectAt
   chainTo: Fn
 }
 
+export interface Seq<Effs extends EffectAtom[]> extends EffectAtom {
+  effects: Effs
+}
+
