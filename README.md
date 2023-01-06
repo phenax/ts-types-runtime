@@ -1,5 +1,5 @@
 # TS Types lang [WIP]
-A runtime for ts types that turns it into a general purpose, purely functional programming language!
+A runtime for typescript's **type system** that turns it into a **general purpose**, **purely functional** programming language!
 
 Take a look at the [./examples](./examples) directory for examples on how to write a program in typescript types
 
@@ -11,10 +11,7 @@ import { PutString, PutStringLn, Bind, Kind1, ReadLine, Do } from 'ts-types-lang
 
 // :: string -> Effect ()
 interface GreetK extends Kind1<string> {
-  return: Do<[
-    PutString<"Hello, ">,
-    PutStringLn<this['input']>
-  ]>,
+  return: PutString<`Hello, ${this['input']}`>,
 }
 
 // main :: [Effect ()] | Effect ()
