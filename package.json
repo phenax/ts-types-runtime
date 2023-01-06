@@ -6,7 +6,9 @@
   "repository": "https://github.com/phenax/ts-types-runtime-environment",
   "author": "Akshay Nair <phenax5@gmail.com>",
   "license": "MIT",
-  "bin": "./dist/index.js",
+  "bin": {
+    "tsr": "./bin.js"
+  },
   "scripts": {
     "build": "tsc",
     "postinstall": "yarn build",
