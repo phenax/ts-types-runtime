@@ -1,10 +1,10 @@
-import { EffectAtom } from './io'
+import { Effect } from './io'
 
-export interface PutString<_ extends string> extends EffectAtom { }
+export interface PutString<_ extends string> extends Effect { }
 
-export interface Print<_ extends any> extends EffectAtom { }
+export interface Print<_ extends any> extends Effect { }
 
-export interface Debug<_ extends string, T> extends EffectAtom<T> { }
+export interface Debug<_ extends string, T> extends Effect<T> { }
 
-export interface ReadLine extends EffectAtom<string> { }
+export interface ReadLine extends Effect<string> { }
 

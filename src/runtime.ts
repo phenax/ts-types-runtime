@@ -58,10 +58,22 @@ const addResult = (name: string, ty: string): Node | undefined => {
 const match = <K extends string, R>(k: K | undefined, pattern: { [key in K | '_']: () => R }) =>
   k && pattern[k] ? pattern[k]() : pattern._()
 
+const customEffects: Record<string, (...args: Type[]) => void> = {}
+
 const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> => {
   const name = effTyp.getSymbol()?.getName()
 
   return match(name, {
+    DefineEffect: async () => {
+      const [nameTyp, exprTyp] = effTyp.getTypeArguments()
+      const name = nameTyp.getLiteralValue() as string
+      const exprStr = exprTyp.getLiteralValue() as string
+      const func = eval(exprStr)
+
+      Object.assign(customEffects, { [name]: func })
+      return []
+    },
+
     Print: async () => {
       console.log(...effTyp.getTypeArguments().map(typeToString));
       return []
@@ -160,38 +172,25 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
     },
 
     _: async () => {
-      console.log(`${name} result effect is unhandled`)
+      if (name && customEffects[name]) {
+        customEffects[name](...effTyp.getTypeArguments())
+      } else {
+        console.log(`${name} result effect is unhandled`)
+      }
       return []
     },
   })
 }
 
-// const evalAccumulator = async (effNode: Node, node: Node) => {
-//   const effTyp = effNode.getType()
-//   await accumulateResults(effTyp, node)
-// }
-
 const main = async () => {
   if (typeRefNode) {
     const resultType = entryPoint?.getType()
 
-    if (typeRefNode && entryPoint && resultType?.getSymbol()?.getName() === 'Program') {
-      const exitCodeTy = getPropertyType(typeRefNode, 'exitCode')
-      const effectTypes = getPropertyType(typeRefNode, 'effects')
-      if (effectTypes?.isTuple()) {
-        for (const typ of effectTypes.getTupleElements()) {
-          await accumulateResults(typ, typeRefNode)
-        }
+    if (resultType) {
+      const effects = resultType.isTuple() ? resultType.getTupleElements() : [resultType]
+      for (const typ of effects) {
+        await accumulateResults(typ, typeRefNode)
       }
-
-      const exitCode = exitCodeTy?.getLiteralValue() as number
-
-      if (exitCode !== 0) {
-        process.exit(exitCode)
-      }
-    } else {
-      const ty = typeChecker.getTypeAtLocation(typeRefNode)
-      console.log(typeToString(ty))
     }
   }
 }
@@ -200,6 +199,7 @@ main()
   .then(() => {
     // console.log(entryPoint?.print())
     // console.log(resultTypeNode?.print())
+    rl.close()
     process.exit(0)
   })
   .catch(e => (console.error(e), process.exit(1)))

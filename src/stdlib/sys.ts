@@ -1,8 +1,8 @@
-import { EffectAtom } from './io'
+import { Effect } from './io'
 
-export interface GetEnv<_Name extends string> extends EffectAtom<string> { }
+export interface GetEnv<_Name extends string> extends Effect<string> { }
 
-export interface GetArgs extends EffectAtom<string[]> { }
+export interface GetArgs extends Effect<string[]> { }
 
-export interface JsExpr<_Expr extends string> extends EffectAtom<any> { }
+export interface JsExpr<_Expr extends string> extends Effect<any> { }
 

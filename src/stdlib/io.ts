@@ -1,22 +1,13 @@
-export interface EffectAtom<T = unknown> { output: T }
-export type Effect = EffectAtom[]
+export interface Effect<T = unknown> { output: T }
 
 export interface Kind1<Inp = unknown, Out = unknown> {
   input: Inp
   return: Out
 }
 
-export interface Program<Effs extends Effect, ExitCode extends number = 0> {
-  effects: Effs,
-  exitCode: ExitCode,
-}
+export interface Bind<_Eff extends Effect, _Fn extends Kind1> extends Effect { }
 
-export interface Bind<Eff extends EffectAtom, Fn extends Kind1> extends EffectAtom {
-  input: Eff
-  chainTo: Fn
-}
+export interface Seq<_Effs extends Effect[]> extends Effect { }
 
-export interface Seq<Effs extends EffectAtom[]> extends EffectAtom {
-  effects: Effs
-}
+export interface DefineEffect<_Name extends string, _Func extends string> extends Effect { }
 

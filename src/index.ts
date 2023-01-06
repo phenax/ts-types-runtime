@@ -1,4 +1,4 @@
-import { Program, Print, PutString, Bind, Debug, Kind1, GetEnv, JsExpr, ReadFile, GetArgs, ReadLine, Seq } from './stdlib'
+import { Print, PutString, Bind, Debug, Kind1, GetEnv, JsExpr, ReadFile, GetArgs, ReadLine, Seq, Effect, DefineEffect } from './stdlib'
 
 interface PrintK<Label extends string = ""> extends Kind1<unknown> {
   return: Debug<Label, this['input']>
@@ -12,7 +12,14 @@ interface StartGuessing extends Kind1<number> {
   return: Bind<Seq<[PutString<"Your guess? ">, ReadLine]>, AskForGuess<this['input']>>
 }
 
-export type main = Program<[
+interface Wow<_A, _B> extends Effect { }
+
+export type main = [
+  DefineEffect<"Wow", `(a, b) => {
+    console.log(typeToString(a), '-->', typeToString(b))
+  }`>,
+  Wow<"a", 69>,
+
   Bind<GetArgs, PrintK>,
   PutString<"1,2,3? ">,
   [1, 2, 3] extends infer Res ? Print<Res> : never,
@@ -34,5 +41,5 @@ export type main = Program<[
     Print<"Wow">,
     Bind<JsExpr<"200 * 2">, PrintK<"200 * 2 =">>,
   ]>,
-]>
+]
 
