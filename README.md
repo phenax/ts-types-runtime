@@ -1,5 +1,5 @@
 # TS Types lang [WIP]
-A runtime for ts types that turns it into a general purpose pure functional programming language!
+A runtime for ts types that turns it into a general purpose, purely functional programming language!
 
 Take a look at the [./examples](./examples) directory for examples on how to write a program in typescript types
 
@@ -7,13 +7,13 @@ Take a look at the [./examples](./examples) directory for examples on how to wri
 ### Example
 
 ```typescript
-import { PutString, Bind, Kind1, ReadLine, Do } from 'ts-types-lang/stdlib'
+import { PutString, PutStringLn, Bind, Kind1, ReadLine, Do } from 'ts-types-lang/stdlib'
 
 // :: string -> Effect ()
 interface GreetK extends Kind1<string> {
   return: Do<[
     PutString<"Hello, ">,
-    PutString<`${this['input']}\n`>
+    PutStringLn<this['input']>
   ]>,
 }
 
