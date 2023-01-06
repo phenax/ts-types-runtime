@@ -3,6 +3,7 @@ import path from 'path'
 import { promises as fs } from 'fs'
 import readline from 'readline';
 import { stdout } from 'process';
+import { v4 as uuid } from 'uuid';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -54,9 +55,6 @@ const addResult = (name: string, ty: string) => {
   }
 }
 
-const createHash = () =>
-  Math.random().toFixed(8).slice(2)
-
 const match = <K extends string, R>(k: K | undefined, pattern: { [key in K | '_']: () => R }) =>
   k && pattern[k] ? pattern[k]() : pattern._()
 
@@ -68,7 +66,7 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
       const [pathTyp] = effTyp.getTypeArguments()
       const filePath = JSON.parse(typeToString(pathTyp))
       const contents = await fs.readFile(filePath, 'utf-8')
-      const hash = createHash()
+      const hash = uuid()
       addResult(hash, JSON.stringify(contents))
       return [hash]
     },
@@ -82,20 +80,20 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
     GetEnv: async () => {
       const [envTyp] = effTyp.getTypeArguments()
       const envName = JSON.parse(typeToString(envTyp))
-      const hash = createHash()
+      const hash = uuid()
       addResult(hash, `${JSON.stringify(process.env[envName] ?? '')}`)
       return [hash]
     },
 
     GetArgs: async () => {
-      const hash = createHash()
+      const hash = uuid()
       addResult(hash, `${JSON.stringify(process.argv.slice(2))}`)
       return [hash]
     },
 
     ReadLine: async () => {
       const line = await readLineFromStdin()
-      const hash = createHash()
+      const hash = uuid()
       addResult(hash, `${JSON.stringify(line)}`)
       return [hash]
     },
@@ -104,7 +102,7 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
       const [exprTyp] = effTyp.getTypeArguments()
       const exprStr = JSON.parse(typeToString(exprTyp))
       const result = eval(`JSON.stringify(${exprStr})`)
-      const hash = createHash()
+      const hash = uuid()
       addResult(hash, `${result}`)
       return [hash]
     },
@@ -158,6 +156,8 @@ const evalAccumulator = async (effNode: Node, node: Node) => {
       const updateEffNode = effNode.replaceWithText(chainRes)
       await evalAccumulator(updateEffNode, node)
     },
+
+    ReplacePlaceholders: async () => { },
 
     _: async () => {
       console.log(effNode.print())

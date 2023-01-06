@@ -13,7 +13,7 @@ export interface GetArgs extends EffectAtom<string[]> { }
 
 export interface ReadLine extends EffectAtom<string> { }
 
-export interface JsExpr<_Expr extends string> extends EffectAtom<any> {}
+export interface JsExpr<_Expr extends string> extends EffectAtom<any> { }
 
 export interface Program<Effs extends Effect, ExitCode extends number = 0> {
   effects: Effs,
@@ -34,10 +34,6 @@ interface PrintK<Label extends string = ""> extends Kind1<unknown> {
   return: Debug<Label, this['input']>
 }
 
-// interface WithInputK extends Kind1<string> {
-//   return: ChainIO<ReadLine, PrintK<this['input']>>
-// }
-
 export type main = Program<[
   ChainIO<GetArgs, PrintK>,
   [1, 2, 3] extends infer Res ? Print<Res> : never,
@@ -46,6 +42,6 @@ export type main = Program<[
   // ChainIO<ReadLine, WithInputK>,
   ChainIO<ReadFile<"./default.nix">, PrintK>,
   PutString<"Your name? ">,
-  ChainIO<ReadLine, PrintK<"Hello,">>,
+  // ChainIO<ReadLine, PrintK<"Hello,">>,
 ]>
 
