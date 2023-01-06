@@ -50,7 +50,7 @@ const addResult = (name: string, ty: string): Node | undefined => {
   }
 }
 
-const customEffects: Record<string, (...args: Type[]) => void> = {}
+const customEffects: Record<string, (...args: Type[]) => any> = {}
 
 const evaluateType = async (effTyp: Type, node: Node): Promise<string[]> => {
   const name = effTyp.getSymbol()?.getName()
@@ -158,7 +158,7 @@ const evaluateType = async (effTyp: Type, node: Node): Promise<string[]> => {
       return [hash]
     },
 
-    Then: async () => {
+    Do: async () => {
       const [effectTyps] = effTyp.getTypeArguments()
       const effectResults = await evalList(effectTyps?.getTupleElements() ?? [], node)
       const resultKey = effectResults[effectResults.length - 1]
@@ -169,7 +169,12 @@ const evaluateType = async (effTyp: Type, node: Node): Promise<string[]> => {
 
     _: async () => {
       if (name && customEffects[name]) {
-        customEffects[name](...effTyp.getTypeArguments())
+        const out = await customEffects[name](...effTyp.getTypeArguments())
+        if (out) {
+          const hash = uuid()
+          addResult(hash, `${JSON.stringify(out)}`)
+          return [hash]
+        }
       } else {
         console.log(`${name} result effect is unhandled`)
       }
@@ -192,9 +197,7 @@ const main = async () => {
 
     if (resultType) {
       const effects = resultType.isTuple() ? resultType.getTupleElements() : [resultType]
-      for (const typ of effects) {
-        await evaluateType(typ, typeRefNode)
-      }
+      await evalList(effects, typeRefNode)
     }
   }
 }
