@@ -1,6 +1,6 @@
 {
   "name": "ts-types-lang",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A runtime for typescript types",
   "main": "stdlib/index.ts",
   "repository": "https://github.com/phenax/ts-types-runtime-environment",
