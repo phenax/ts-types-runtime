@@ -71,7 +71,7 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
       return [hash]
     },
 
-    ChainIO: async () => {
+    Bind: async () => {
       const inputTyp = effTyp.getProperty('input')?.getTypeAtLocation(node)
       const inputResults = inputTyp && await accumulateResults(inputTyp, node)
       return inputResults ?? []
@@ -149,7 +149,7 @@ const evalAccumulator = async (effNode: Node, node: Node) => {
       await fs.writeFile(filePath, contents)
     },
 
-    ChainIO: async () => {
+    Bind: async () => {
       const chainToKind = effTyp.getProperty('chainTo')?.getTypeAtLocation(node)
       const [hashRes] = await accumulateResults(effTyp, node)
       const chainRes = `(${typeToString(chainToKind)} & { input: ${RESULT_TYPE_NAME}[${JSON.stringify(hashRes)}]['output'] })['return']`
