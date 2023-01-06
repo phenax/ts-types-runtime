@@ -1,4 +1,4 @@
-import { Print, PutString, Bind, Kind1, JsExpr, ReadLine, Do, PutStringLn } from '../src/stdlib'
+import { Print, PutString, Bind, Kind1, JsExpr, ReadLine, Do, PutStringLn } from '../stdlib'
 
 export type main = [
   PutStringLn<"You have 5 guesses">,

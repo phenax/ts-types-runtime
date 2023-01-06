@@ -1,4 +1,4 @@
-import { Project, ScriptTarget, Type, Node, StringLiteral, TypeFormatFlags, SyntaxKind } from 'ts-morph'
+import { Project, ScriptTarget, Type, Node, SyntaxKind } from 'ts-morph'
 import path from 'path'
 import { promises as fs } from 'fs'
 import readline from 'readline';
@@ -25,6 +25,10 @@ const typeChecker = project.getTypeChecker()
 
 const [filePath] = process.argv.slice(2)
 
+if (!filePath) {
+  throw new Error('Must specify runtime file')
+}
+
 const sourceFile = project.addSourceFileAtPath(path.resolve(filePath))
 
 const entryPoint = sourceFile.getExportedDeclarations().get('main')?.[0]
@@ -39,7 +43,7 @@ const RESULT_TYPE_NAME = '__$result'
 const [resultTypeNode] = sourceFile.addStatements(`type ${RESULT_TYPE_NAME} = {}`)
 
 const addResult = (name: string, ty: string): Node | undefined => {
-  if (resultTypeNode.isKind(SyntaxKind.TypeAliasDeclaration)) {
+  if (resultTypeNode?.isKind(SyntaxKind.TypeAliasDeclaration)) {
     const value = resultTypeNode.getChildAtIndex(3)
     if (value.isKind(SyntaxKind.TypeLiteral)) {
       return value.addProperty({
@@ -48,6 +52,7 @@ const addResult = (name: string, ty: string): Node | undefined => {
       })
     }
   }
+  return
 }
 
 const customEffects: Record<string, (...args: Type[]) => any> = {}
@@ -59,8 +64,8 @@ const evaluateType = async (effTyp: Type, node: Node): Promise<string[]> => {
   return match(name, {
     DefineEffect: async () => {
       const [nameTyp, exprTyp] = effTyp.getTypeArguments()
-      const name = nameTyp.getLiteralValue() as string
-      const exprStr = exprTyp.getLiteralValue() as string
+      const name = nameTyp?.getLiteralValue() as string
+      const exprStr = exprTyp?.getLiteralValue() as string
       const func = eval(exprStr)
 
       Object.assign(customEffects, { [name]: func })
@@ -169,7 +174,7 @@ const evaluateType = async (effTyp: Type, node: Node): Promise<string[]> => {
 
     _: async () => {
       if (name && customEffects[name]) {
-        const out = await customEffects[name](...effTyp.getTypeArguments())
+        const out = await customEffects[name]?.(...effTyp.getTypeArguments())
         if (out) {
           const hash = uuid()
           addResult(hash, `${JSON.stringify(out)}`)

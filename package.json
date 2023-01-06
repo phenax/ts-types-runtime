@@ -1,24 +1,28 @@
 {
-  "name": "typeslang",
+  "name": "ts-types-lang",
   "version": "0.0.0",
-  "description": "__",
-  "main": "__",
-  "repository": "__",
+  "description": "A runtime for typescript types",
+  "main": "stdlib/index.ts",
+  "repository": "https://github.com/phenax/ts-types-runtime-environment",
   "author": "Akshay Nair <phenax5@gmail.com>",
   "license": "MIT",
+  "bin": {
+    "tsr": "./dist/index.js"
+  },
   "scripts": {
-    "runtime": "ts-node src/runtime.ts",
-    "watch": "nodemon --exec 'clear && yarn runtime' -e .ts"
+    "build": "tsc",
+    "postinstall": "yarn build",
+    "dev": "ts-node src/index.ts"
   },
   "dependencies": {
     "ts-morph": "^17.0.1",
-    "ts-node": "^10.9.1",
     "typescript": "^4.9.4",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
     "@types/uuid": "^9.0.0",
-    "nodemon": "^2.0.20"
+    "ts-node": "^10.9.1",
+    "ts-types-lang": "^0.0.0"
   }
 }

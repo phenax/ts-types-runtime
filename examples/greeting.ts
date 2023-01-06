@@ -1,4 +1,4 @@
-import { PutString, Bind, Kind1, ReadLine, Seq } from '../src/stdlib'
+import { PutString, Bind, Kind1, ReadLine, Seq } from '../stdlib'
 
 interface GreetK extends Kind1<string> {
   return: Seq<[

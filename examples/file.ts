@@ -1,4 +1,4 @@
-import { Bind, Kind1, ReadFile, PutStringLn } from '../src/stdlib'
+import { Bind, Kind1, ReadFile, PutStringLn } from '../stdlib'
 
 interface PrintK extends Kind1<string> {
   return: PutStringLn<this['input']>
