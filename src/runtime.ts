@@ -150,15 +150,20 @@ const evaluateType = async (effTyp: Type, node: Node): Promise<string[]> => {
 
     Seq: async () => {
       const [effectTyps] = effTyp.getTypeArguments()
-      const effectResults: string[] = []
-      for (const item of effectTyps?.getTupleElements() ?? []) {
-        effectResults.push(...(await evaluateType(item, node)))
-      }
-
+      const effectResults = await evalList(effectTyps?.getTupleElements() ?? [], node)
       const hash = uuid()
       addResult(hash, `[
         ${effectResults.map(r => `${RESULT_TYPE_NAME}[${JSON.stringify(r)}]`).join(', ')}
       ]`)
+      return [hash]
+    },
+
+    Then: async () => {
+      const [effectTyps] = effTyp.getTypeArguments()
+      const effectResults = await evalList(effectTyps?.getTupleElements() ?? [], node)
+      const resultKey = effectResults[effectResults.length - 1]
+      const hash = uuid()
+      addResult(hash, `${RESULT_TYPE_NAME}[${JSON.stringify(resultKey)}]['output']`)
       return [hash]
     },
 
@@ -171,6 +176,14 @@ const evaluateType = async (effTyp: Type, node: Node): Promise<string[]> => {
       return []
     },
   })
+}
+
+const evalList = async (effectTyps: Type[], node: Node) => {
+  const effectResults: string[] = []
+  for (const item of effectTyps ?? []) {
+    effectResults.push(...(await evaluateType(item, node)))
+  }
+  return effectResults
 }
 
 const main = async () => {
