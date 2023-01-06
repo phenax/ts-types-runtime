@@ -1,12 +1,36 @@
-# TS Types lang
-A stupid runtime for TS types!
+# TS Types lang [WIP]
+A runtime for ts types that turns it into a general purpose pure functional programming language!
 
-Take a look at the [./examples][./examples] directory for examples on how to write a program in typescript types
+Take a look at the [./examples](./examples) directory for examples on how to write a program in typescript types
+
+
+### Example
+
+```typescript
+import { PutString, Bind, Kind1, ReadLine, Do } from 'ts-types-lang/stdlib'
+
+// :: string -> Effect ()
+interface GreetK extends Kind1<string> {
+  return: Do<[
+    PutString<"Hello, ">,
+    PutString<`${this['input']}\n`>
+  ]>,
+}
+
+// main :: [Effect ()] | Effect ()
+export type main = [
+  PutString<"Your name? ">,
+  Bind<ReadLine, GreetK>,
+]
+```
 
 To run it -
 ```bash
-npx ts-types-lang ./examples/guess-number.ts
+npx tsr ./examples/guess-number.ts
+// OR
+yarn exec tsr ./examples/guess-number.ts
 ```
+
 
 ### Why?
 
