@@ -8,3 +8,5 @@ export interface Debug<_ extends string, T> extends Effect<T> { }
 
 export interface ReadLine extends Effect<string> { }
 
+export type PutStringLn<S extends string> = PutString<`${S}\n`>
+

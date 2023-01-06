@@ -2,8 +2,8 @@ import { Project, ScriptTarget, Type, Node, StringLiteral, TypeFormatFlags, Synt
 import path from 'path'
 import { promises as fs } from 'fs'
 import readline from 'readline';
-import { stdout } from 'process';
 import { v4 as uuid } from 'uuid';
+import { match } from './util';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -23,19 +23,14 @@ const project = new Project({
 
 const typeChecker = project.getTypeChecker()
 
-const sourceFile = project.addSourceFileAtPath(path.resolve("./src/index.ts"))
+const [filePath] = process.argv.slice(2)
+
+const sourceFile = project.addSourceFileAtPath(path.resolve(filePath))
 
 const entryPoint = sourceFile.getExportedDeclarations().get('main')?.[0]
 
 const typeToString = (ty: Type | undefined): string =>
   ty ? typeChecker.compilerObject.typeToString(ty.compilerType) : ''
-
-const getPropertyType = (n: Node, prop: string): Type | undefined => {
-  const tt = typeChecker.getTypeAtLocation(n)
-  const propSym = tt.getProperty(prop)
-  const ty = propSym && typeChecker.getTypeOfSymbolAtLocation(propSym, n)
-  return ty
-}
 
 const typeRefNode = entryPoint?.getLastChild()
 
@@ -55,13 +50,11 @@ const addResult = (name: string, ty: string): Node | undefined => {
   }
 }
 
-const match = <K extends string, R>(k: K | undefined, pattern: { [key in K | '_']: () => R }) =>
-  k && pattern[k] ? pattern[k]() : pattern._()
-
 const customEffects: Record<string, (...args: Type[]) => void> = {}
 
-const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> => {
+const evaluateType = async (effTyp: Type, node: Node): Promise<string[]> => {
   const name = effTyp.getSymbol()?.getName()
+  // console.log(name)
 
   return match(name, {
     DefineEffect: async () => {
@@ -83,7 +76,7 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
       const [strinTyp] = effTyp.getTypeArguments()
       const typString = typeToString(strinTyp)
       const string = JSON.parse(!typString.startsWith('"') ? `"${typString}"` : typString)
-      stdout.write(string);
+      process.stdout.write(string);
       return []
     },
 
@@ -115,16 +108,14 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
 
     Bind: async () => {
       const [inputTyp, chainToKind] = effTyp.getTypeArguments()
-      const [resultKey] = inputTyp ? await accumulateResults(inputTyp, node) : []
+      const [resultKey] = inputTyp ? await evaluateType(inputTyp, node) : []
 
       const hash = uuid()
       const compNode = addResult(hash,
         `(${typeToString(chainToKind)} & { input: ${RESULT_TYPE_NAME}[${JSON.stringify(resultKey)}]['output'] })['return']`)
       const compTyp = compNode?.getType().getProperty('output')?.getTypeAtLocation(node)
 
-      if (compTyp)
-        return accumulateResults(compTyp, node)
-      return []
+      return compTyp ? await evaluateType(compTyp, node) : []
     },
 
     GetEnv: async () => {
@@ -161,7 +152,7 @@ const accumulateResults = async (effTyp: Type, node: Node): Promise<string[]> =>
       const [effectTyps] = effTyp.getTypeArguments()
       const effectResults: string[] = []
       for (const item of effectTyps?.getTupleElements() ?? []) {
-        effectResults.push(...(await accumulateResults(item, node)))
+        effectResults.push(...(await evaluateType(item, node)))
       }
 
       const hash = uuid()
@@ -189,7 +180,7 @@ const main = async () => {
     if (resultType) {
       const effects = resultType.isTuple() ? resultType.getTupleElements() : [resultType]
       for (const typ of effects) {
-        await accumulateResults(typ, typeRefNode)
+        await evaluateType(typ, typeRefNode)
       }
     }
   }
