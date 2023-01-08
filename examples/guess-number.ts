@@ -1,7 +1,7 @@
 import { Print, PutString, Bind, Kind1, JsExpr, ReadLine, Do, PutStringLn } from '../stdlib'
 
 export type main = [
-  PutStringLn<"You have 5 guesses">,
+  PutStringLn<"Guess a number between 0 & 9. You have 5 guesses">,
   Bind<
     JsExpr<"Math.floor(Math.random() * 10)">,
     StartGuessing
@@ -14,7 +14,7 @@ interface AskForGuess<N extends number, Attempts extends 0[]> extends Kind1<stri
     : Do<[
       Print<`Wrong guess. Total attempts: ${
         [...Attempts, 0] extends infer Ls extends 0[] ? Ls['length'] : 0
-      }`>,
+      }/5`>,
       (StartGuessing<[...Attempts, 0]> & { input: N })['return'],
     ]>
 }
