@@ -1,20 +1,23 @@
 import { Type } from 'ts-morph'
 import { promises as fs } from 'fs'
-import readline from 'readline';
+import readline from 'readline'
 
-import { match } from './util';
-import { Ctx } from './types';
+import { match } from './util'
+import { Ctx } from './types'
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
-  terminal: false
-});
+  terminal: false,
+})
 
-const readLineFromStdin = (): Promise<string> => new Promise((res) =>
-  rl.on('line', res))
+const readLineFromStdin = (): Promise<string> =>
+  new Promise((res) => rl.on('line', res))
 
-export const evaluateType = async (ctx: Ctx, effTyp: Type): Promise<string[]> => {
+export const evaluateType = async (
+  ctx: Ctx,
+  effTyp: Type
+): Promise<string[]> => {
   const name = effTyp.getSymbol()?.getName()
 
   return match(name, {
@@ -28,15 +31,17 @@ export const evaluateType = async (ctx: Ctx, effTyp: Type): Promise<string[]> =>
     },
 
     Print: async () => {
-      console.log(...effTyp.getTypeArguments().map(ctx.typeToString));
+      console.log(...effTyp.getTypeArguments().map(ctx.typeToString))
       return []
     },
 
     PutString: async () => {
       const [strinTyp] = effTyp.getTypeArguments()
       const typString = ctx.typeToString(strinTyp)
-      const string = JSON.parse(!typString.startsWith('"') ? `"${typString}"` : typString)
-      process.stdout.write(string);
+      const string = JSON.parse(
+        !typString.startsWith('"') ? `"${typString}"` : typString
+      )
+      process.stdout.write(string)
       return []
     },
 
@@ -70,9 +75,15 @@ export const evaluateType = async (ctx: Ctx, effTyp: Type): Promise<string[]> =>
       const [resultKey] = inputTyp ? await evaluateType(ctx, inputTyp) : []
 
       const [_, compNode] = ctx.createResult(
-        `(${ctx.typeToString(chainToKind)} & { input: (${ctx.getResultExpr(resultKey)})['output'] })['return']`)
+        `(${ctx.typeToString(chainToKind)} & { input: (${ctx.getResultExpr(
+          resultKey
+        )})['output'] })['return']`
+      )
       // TODO: Avoid using getTypeAtLocation?
-      const compTyp = compNode?.getType().getProperty('output')?.getTypeAtLocation(ctx.entryPoint)
+      const compTyp = compNode
+        ?.getType()
+        .getProperty('output')
+        ?.getTypeAtLocation(ctx.entryPoint)
 
       return compTyp ? await evaluateType(ctx, compTyp) : []
     },
@@ -80,12 +91,16 @@ export const evaluateType = async (ctx: Ctx, effTyp: Type): Promise<string[]> =>
     GetEnv: async () => {
       const [envTyp] = effTyp.getTypeArguments()
       const envName = JSON.parse(ctx.typeToString(envTyp))
-      const [resultKey, _] = ctx.createResult(`${JSON.stringify(process.env[envName] ?? '')}`)
+      const [resultKey, _] = ctx.createResult(
+        `${JSON.stringify(process.env[envName] ?? '')}`
+      )
       return [resultKey]
     },
 
     GetArgs: async () => {
-      const [resultKey, _] = ctx.createResult(`${JSON.stringify(process.argv.slice(2))}`)
+      const [resultKey, _] = ctx.createResult(
+        `${JSON.stringify(process.argv.slice(2))}`
+      )
       return [resultKey]
     },
 
@@ -105,7 +120,10 @@ export const evaluateType = async (ctx: Ctx, effTyp: Type): Promise<string[]> =>
 
     Seq: async () => {
       const [effectTyps] = effTyp.getTypeArguments()
-      const effectResults = await evalList(ctx, effectTyps?.getTupleElements() ?? [])
+      const effectResults = await evalList(
+        ctx,
+        effectTyps?.getTupleElements() ?? []
+      )
       const [resultKey, _] = ctx.createResult(`[
         ${effectResults.map(ctx.getResultExpr).join(', ')}
       ]`)
@@ -114,9 +132,14 @@ export const evaluateType = async (ctx: Ctx, effTyp: Type): Promise<string[]> =>
 
     Do: async () => {
       const [effectTyps] = effTyp.getTypeArguments()
-      const effectResults = await evalList(ctx, effectTyps?.getTupleElements() ?? [])
+      const effectResults = await evalList(
+        ctx,
+        effectTyps?.getTupleElements() ?? []
+      )
       const lastResKey = effectResults[effectResults.length - 1]
-      const [resultKey, _] = ctx.createResult(`${ctx.getResultExpr(lastResKey)}['output']`)
+      const [resultKey, _] = ctx.createResult(
+        `${ctx.getResultExpr(lastResKey)}['output']`
+      )
       return [resultKey]
     },
 

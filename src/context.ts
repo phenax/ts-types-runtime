@@ -1,7 +1,7 @@
 import { Project, ScriptTarget, Type, Node, SyntaxKind } from 'ts-morph'
 import path from 'path'
-import { v4 as uuid } from 'uuid';
-import { Ctx } from './types';
+import { v4 as uuid } from 'uuid'
+import { Ctx } from './types'
 
 const RESULT_TYPE_NAME = '__$result'
 
@@ -31,9 +31,12 @@ export const createContext = (): Ctx => {
   const typeToString = (ty: Type | undefined): string =>
     ty ? typeChecker.compilerObject.typeToString(ty.compilerType) : ''
 
-  const [resultTypeNode] = sourceFile.addStatements(`type ${RESULT_TYPE_NAME} = {}`)
+  const [resultTypeNode] = sourceFile.addStatements(
+    `type ${RESULT_TYPE_NAME} = {}`
+  )
 
-  const getResultExpr = (resultKey?: string) => `${RESULT_TYPE_NAME}[${JSON.stringify(resultKey)}`
+  const getResultExpr = (resultKey?: string) =>
+    `${RESULT_TYPE_NAME}[${JSON.stringify(resultKey)}`
 
   const addResult = (name: string, ty: string): Node | undefined =>
     resultTypeNode
@@ -77,4 +80,3 @@ export const createContext = (): Ctx => {
     hasCustomEffect: (name) => customEffects[name] !== undefined,
   }
 }
-

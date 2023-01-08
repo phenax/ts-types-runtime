@@ -1,4 +1,10 @@
-import { ExportedDeclarations, Node, SourceFile, Type, TypeChecker } from "ts-morph"
+import {
+  ExportedDeclarations,
+  Node,
+  SourceFile,
+  Type,
+  TypeChecker,
+} from 'ts-morph'
 
 export interface Ctx {
   sourceFile: SourceFile
@@ -14,4 +20,3 @@ export interface Ctx {
   runCustomEffect: (name: string, args: Type[]) => Promise<string[]>
   hasCustomEffect: (name: string) => boolean
 }
-
