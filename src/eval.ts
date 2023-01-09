@@ -148,7 +148,7 @@ export const evaluateType = async (
         return ctx.runCustomEffect(name, effTyp.getTypeArguments())
       }
 
-      console.log(`${name} result effect is unhandled`)
+      console.log(`${name} effect is not handled`)
       return []
     },
   })

@@ -1,5 +1,4 @@
 import {
-  Print,
   PutString,
   Bind,
   Kind1,
@@ -21,7 +20,7 @@ interface AskForGuess<N extends number, Attempts extends 0[]>
     : Do<
         [
           PutString<'Wrong guess. Total attempts'>,
-          Print<`${[...Attempts, 0] extends infer Ls extends 0[]
+          PutStringLn<` ${[...Attempts, 0] extends infer Ls extends 0[]
             ? Ls['length']
             : 0}/5`>,
           (StartGuessing<[...Attempts, 0]> & { input: N })['return']
