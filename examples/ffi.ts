@@ -1,4 +1,6 @@
-import { Bind, Debug, DefineEffect, Effect, JsExpr, Kind1 } from '../stdlib'
+import { Bind, Effect, Kind1 } from '../stdlib/effect'
+import { DefineEffect, JsExpr } from '../stdlib/sys'
+import { Debug } from '../stdlib/stdio'
 
 interface PrintK<Label extends string = ''> extends Kind1 {
   return: Debug<Label, this['input']>

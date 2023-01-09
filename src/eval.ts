@@ -142,7 +142,7 @@ export const evaluateType = async (
       )
       const lastResKey = effectResults[effectResults.length - 1]
       const [resultKey, _] = ctx.createResult(
-        `${ctx.getResultExpr(lastResKey)}['output']`
+        `(${ctx.getResultExpr(lastResKey)})['output']`
       )
       return [resultKey]
     },

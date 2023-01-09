@@ -1,4 +1,6 @@
-import { DefineEffect, Do, Effect, Print, PutString, PutStringLn } from '../stdlib'
+import { Do, Effect } from '../stdlib/effect'
+import { Print, PutString, PutStringLn } from '../stdlib/stdio'
+import { DefineEffect } from '../stdlib/sys'
 
 type Testi<m extends string, effs extends Effect[]> = [
   PutStringLn<m>,
@@ -8,7 +10,9 @@ type Testi<m extends string, effs extends Effect[]> = [
 type Equals<Left, Right> =
   [Left] extends [Right] ? ([Right] extends [Left] ? true : false) : false
 
-interface Assert<_B extends true> extends Effect { }
+
+type CompileTimeErrors = false
+interface Assert<_B extends (CompileTimeErrors extends true ? true : boolean)> extends Effect { }
 
 type testCases = [
   ...Testi<"should do some stuff", [

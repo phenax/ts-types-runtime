@@ -1,4 +1,4 @@
-import { Kind1 } from './io'
+import { Kind1 } from './effect'
 
 export type Let<f extends (...args: any) => any> = ReturnType<f>
 

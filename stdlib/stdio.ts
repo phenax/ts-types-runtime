@@ -1,4 +1,4 @@
-import { Effect } from './io'
+import { Effect } from './effect'
 
 export interface PutString<_ extends string> extends Effect {}
 

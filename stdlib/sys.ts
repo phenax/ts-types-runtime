@@ -1,7 +1,10 @@
-import { Effect } from './io'
+import { Effect } from './effect'
 
 export interface GetEnv<_Name extends string> extends Effect<string> {}
 
 export interface GetArgs extends Effect<string[]> {}
 
 export interface JsExpr<_Expr extends string> extends Effect<any> {}
+
+export interface DefineEffect<_Name extends string, _Func extends string>
+  extends Effect {}

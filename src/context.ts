@@ -34,7 +34,7 @@ export const createContext = (options: CtxOptions): Ctx => {
   )
 
   const getResultExpr = (resultKey?: string) =>
-    `${RESULT_TYPE_NAME}[${JSON.stringify(resultKey)}`
+    `(${RESULT_TYPE_NAME}[${JSON.stringify(resultKey)})`
 
   const addResult = (name: string, ty: string): Node | undefined =>
     resultTypeNode

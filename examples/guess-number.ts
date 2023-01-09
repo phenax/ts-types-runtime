@@ -1,20 +1,13 @@
-import {
-  PutString,
-  Bind,
-  Kind1,
-  JsExpr,
-  ReadLine,
-  Do,
-  PutStringLn,
-} from '../stdlib'
+import { Bind, Kind1, Do } from '../stdlib/effect'
+import { PutString, ReadLine, PutStringLn } from '../stdlib/stdio'
+import { JsExpr } from '../stdlib/sys'
 
 export type main = [
   PutStringLn<'Guess a number between 0 & 9. You have 5 guesses'>,
   Bind<JsExpr<'Math.floor(Math.random() * 10)'>, StartGuessing>
 ]
 
-interface AskForGuess<N extends number, Attempts extends 0[]>
-  extends Kind1<string> {
+interface AskForGuess<N extends number, Attempts extends 0[]> extends Kind1<string> {
   return: `${this['input']}` extends `${N}`
     ? PutStringLn<'Yay! You got it right!'>
     : Do<

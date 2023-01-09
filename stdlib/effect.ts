@@ -13,5 +13,3 @@ export interface Seq<_Effs extends Effect[]> extends Effect {}
 
 export interface Do<_Effs extends Effect[]> extends Effect {}
 
-export interface DefineEffect<_Name extends string, _Func extends string>
-  extends Effect {}

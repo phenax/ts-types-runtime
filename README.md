@@ -7,7 +7,8 @@ Take a look at the [./examples](./examples) directory for examples on how to wri
 ### Example
 
 ```typescript
-import { PutString, PutStringLn, Bind, Kind1, ReadLine, Do } from 'ts-types-lang/stdlib'
+import { Bind, Kind1, Do } from 'ts-types-lang/stdlib/effect'
+import { PutString, PutStringLn, ReadLine } from 'ts-types-lang/stdlib/stdio'
 
 // :: string -> Effect ()
 interface GreetK extends Kind1<string> {
@@ -23,9 +24,9 @@ export type main = [
 
 To run it -
 ```bash
-npx tsr ./examples/guess-number.ts
+npx tsr run ./examples/guess-number.ts
 // OR
-yarn exec tsr ./examples/guess-number.ts
+yarn exec tsr run ./examples/guess-number.ts
 ```
 
 
