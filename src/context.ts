@@ -5,7 +5,11 @@ import { Ctx } from './types'
 
 const RESULT_TYPE_NAME = '__$result'
 
-export const createContext = (): Ctx => {
+export interface CtxOptions {
+  filePath: string
+}
+
+export const createContext = (options: CtxOptions): Ctx => {
   const project = new Project({
     compilerOptions: {
       target: ScriptTarget.ES3,
@@ -14,13 +18,7 @@ export const createContext = (): Ctx => {
 
   const typeChecker = project.getTypeChecker()
 
-  const [filePath] = process.argv.slice(2)
-
-  if (!filePath) {
-    throw new Error('Must specify ts file to run')
-  }
-
-  const sourceFile = project.addSourceFileAtPath(path.resolve(filePath))
+  const sourceFile = project.addSourceFileAtPath(path.resolve(options.filePath))
 
   const entryPoint = sourceFile.getExportedDeclarations().get('main')?.[0]
 

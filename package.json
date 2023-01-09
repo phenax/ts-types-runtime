@@ -12,11 +12,12 @@
   "scripts": {
     "build": "tsc",
     "postinstall": "yarn build",
-    "dev": "ts-node src/index.ts"
+    "cli": "ts-node src/index.ts"
   },
   "dependencies": {
     "@types/node": "^18.11.18",
     "@types/uuid": "^9.0.0",
+    "commander": "^9.5.0",
     "ts-morph": "^17.0.1",
     "typescript": "^4.9.4",
     "uuid": "^9.0.0"

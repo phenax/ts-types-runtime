@@ -11,6 +11,10 @@ const rl = readline.createInterface({
   terminal: false,
 })
 
+export const cleanup = () => {
+  rl.close()
+}
+
 const readLineFromStdin = (): Promise<string> =>
   new Promise((res) => rl.on('line', res))
 
