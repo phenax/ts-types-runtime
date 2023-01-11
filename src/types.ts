@@ -11,6 +11,7 @@ export interface Ctx {
   typeChecker: TypeChecker
   entryPoint: ExportedDeclarations
   typeToString: (ty: Type | undefined) => string
+  getTypeValue: (ty: Type | undefined) => any
 
   createResult: (ty: string) => [string, Node | undefined]
   getResultExpr: (key?: string) => string

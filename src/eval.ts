@@ -49,17 +49,14 @@ export const evaluateType = async (
 
     PutString: async () => {
       const [strinTyp] = args
-      const typString = ctx.typeToString(strinTyp)
-      const string = JSON.parse(
-        !typString.startsWith('"') ? `"${typString}"` : typString
-      )
-      process.stdout.write(string)
+      const typString = ctx.getTypeValue(strinTyp) ?? ctx.typeToString(strinTyp)
+      process.stdout.write(typString)
       return []
     },
 
     Debug: async () => {
       const [labelTyp, valueTyp] = args
-      const label = JSON.parse(ctx.typeToString(labelTyp))
+      const label = ctx.getTypeValue(labelTyp)
       const value = ctx.typeToString(valueTyp)
       console.log(label, value)
       const [resultKey, _] = ctx.createResult(JSON.stringify(value))
@@ -68,7 +65,7 @@ export const evaluateType = async (
 
     ReadFile: async () => {
       const [pathTyp] = args
-      const filePath = JSON.parse(ctx.typeToString(pathTyp))
+      const filePath = ctx.getTypeValue(pathTyp)
       const contents = await fs.readFile(filePath, 'utf-8')
       const [resultKey, _] = ctx.createResult(JSON.stringify(contents))
       return [resultKey]
@@ -76,8 +73,8 @@ export const evaluateType = async (
 
     WriteFile: async () => {
       const [pathTyp, contentsTyp] = args
-      const filePath = JSON.parse(ctx.typeToString(pathTyp))
-      const contents = JSON.parse(ctx.typeToString(contentsTyp))
+      const filePath = ctx.getTypeValue(pathTyp)
+      const contents = ctx.getTypeValue(contentsTyp)
       await fs.writeFile(filePath, contents)
       return []
     },
@@ -86,6 +83,7 @@ export const evaluateType = async (
       const [inputTyp, chainToKind] = args
       const [resultKey] = inputTyp ? await evaluateType(ctx, inputTyp) : []
 
+      // TODO: Handle resultKey undefined case
       const [_, compNode] = ctx.createResult(
         `(${ctx.typeToString(chainToKind)} & { input: (${ctx.getResultExpr(
           resultKey
@@ -102,7 +100,7 @@ export const evaluateType = async (
 
     GetEnv: async () => {
       const [envTyp] = args
-      const envName = JSON.parse(ctx.typeToString(envTyp))
+      const envName = ctx.getTypeValue(envTyp)
       const [resultKey, _] = ctx.createResult(
         `${JSON.stringify(process.env[envName] ?? '')}`
       )
@@ -124,7 +122,7 @@ export const evaluateType = async (
 
     JsExpr: async () => {
       const [exprTyp] = args
-      const exprStr = JSON.parse(ctx.typeToString(exprTyp))
+      const exprStr = ctx.getTypeValue(exprTyp)
       const result = eval(`JSON.stringify(${exprStr})`)
       const [resultKey, _] = ctx.createResult(`${result}`)
       return [resultKey]
@@ -148,6 +146,7 @@ export const evaluateType = async (
         ctx,
         effectTyps?.getTupleElements() ?? []
       )
+      // TODO: Use last type's result instead of last result key
       const lastResKey = effectResults[effectResults.length - 1]
       const [resultKey, _] = ctx.createResult(
         `(${ctx.getResultExpr(lastResKey)})['output']`
@@ -161,6 +160,8 @@ export const evaluateType = async (
       }
 
       console.log(`${name} effect is not handled`)
+      console.log(ctx.typeToString(effTyp))
+      // TODO: Maybe throw?
       return []
     },
   })

@@ -1,8 +1,8 @@
-import { Bind, Kind1, Seq } from '../stdlib/effect'
+import { Bind, Kind1 } from '../stdlib/effect'
 import { PutString, ReadLine, PutStringLn } from '../stdlib/stdio'
 
 interface GreetK extends Kind1<string> {
-  return: Seq<[PutString<'Hello, '>, PutString<`${this['input']}\n`>]>
+  return: PutStringLn<`Hello, ${this['input']}`>
 }
 
 export type main = [

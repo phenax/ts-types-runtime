@@ -6,19 +6,24 @@ interface PrintK<Label extends string = ''> extends Kind1 {
   return: Debug<Label, this['input']>
 }
 
+// Declare custom effect
+interface CustomThingy<_A, _B extends number> extends Effect {}
+
+// Alias for squaring a number
 type Square<N extends number> = JsExpr<`${N} ** 2`>
 
-interface Mathemagic<_A, _B extends number> extends Effect {}
-
 export type main = [
+  // FFI via js expression
   Bind<JsExpr<'{ boobaa: [5 * 3, 5 * 2] }'>, PrintK<'|'>>,
   Bind<Square<69>, PrintK<'69^2 ='>>,
+
+  // FFI via custom effect
   DefineEffect<
-    'Mathemagic',
-    `(a, b) => {
-      console.log(typeToString(a))
-      return { result: 5 * b.getLiteralValue() }
+    'CustomThingy',
+    `([a, b], ctx) => {
+      console.log(ctx.typeToString(a))
+      return { result: 5 * ctx.getTypeValue(b) }
     }`
   >,
-  Bind<Mathemagic<'a', 69>, PrintK<'69 * 5 ='>>
+  Bind<CustomThingy<'a', 69>, PrintK<'69 * 5 ='>>
 ]

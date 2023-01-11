@@ -51,13 +51,20 @@ export const createContext = (options: CtxOptions): Ctx => {
     return [resultKey, node]
   }
 
-  const customEffects: Record<string, (...args: Type[]) => any> = {}
+  const customEffects: Record<string, (args: Type[], ctx: Ctx) => any> = {}
 
-  return {
+  const getTypeValue = (ty: Type | undefined): any => {
+    try {
+      return JSON.parse(typeToString(ty))
+    } catch(_) { return }
+  }
+
+  const ctx: Ctx = {
     sourceFile,
     typeChecker,
     entryPoint,
     typeToString,
+    getTypeValue,
 
     createResult,
     getResultExpr,
@@ -68,7 +75,7 @@ export const createContext = (options: CtxOptions): Ctx => {
       Object.assign(customEffects, { [name]: func })
     },
     runCustomEffect: async (name, args) => {
-      const output = await customEffects[name]?.(...args)
+      const output = await customEffects[name]?.(args, ctx)
       if (output) {
         const [resultKey, _] = createResult(`${JSON.stringify(output)}`)
         return [resultKey]
@@ -77,4 +84,6 @@ export const createContext = (options: CtxOptions): Ctx => {
     },
     hasCustomEffect: (name) => customEffects[name] !== undefined,
   }
+
+  return ctx
 }

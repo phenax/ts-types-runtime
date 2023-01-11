@@ -1,39 +1,45 @@
 import { Do, Effect } from '../stdlib/effect'
-import { Print, PutStringLn } from '../stdlib/stdio'
+import { PutStringLn } from '../stdlib/stdio'
 import { DefineEffect } from '../stdlib/sys'
 
-type Testi<m extends string, effs extends Effect[]> = [
-  PutStringLn<m>,
+type Test<m extends string, effs extends Effect[]> = [
+  PutStringLn<`* ${m}`>,
   ...effs,
 ]
 
 type Equals<Left, Right> =
   [Left] extends [Right] ? ([Right] extends [Left] ? true : false) : false
 
+type Not<B extends boolean> = B extends true ? false : true
 
-type CompileTimeErrors = false
-interface Assert<_B extends (CompileTimeErrors extends true ? true : boolean)> extends Effect { }
+interface TestConfig {
+  CompileTestFailures: false
+}
 
-type testCases = [
-  ...Testi<"should do some stuff", [
-    Assert<Equals<1, 2>>,
-  ]>,
-
-  ...Testi<"hello world", [
-    Print<2>,
-  ]>,
-
-  ...Testi<"should do some other stuff", [
-    Print<5>,
-  ]>,
-]
+type Assertion = TestConfig['CompileTestFailures'] extends true ? true : boolean
+interface Assert<_B extends Assertion> extends Effect { }
 
 export type main = [
-  DefineEffect<'Assert', `(b) => {
-    if (!b.getLiteralValue()) {
+  DefineEffect<'Assert', `([b], ctx) => {
+    if (!ctx.getTypeValue(b)) {
       throw new Error('AAAAAAA')
     }
   }`>,
+
   PutStringLn<"Running tests...">,
-  Do<testCases>,
+
+  Do<[
+    ...Test<"should do some stuff", [
+      Assert<Equals<1, 1>>,
+      Assert<Not<Equals<2, 1>>>,
+    ]>,
+
+    ...Test<"hello world", [
+      Assert<Equals<1, 1>>,
+    ]>,
+
+    ...Test<"should do some other stuff", [
+      Assert<Equals<1, 1>>,
+    ]>,
+  ]>,
 ]
