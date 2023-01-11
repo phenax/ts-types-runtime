@@ -12,7 +12,11 @@ export interface CtxOptions {
 export const createContext = (options: CtxOptions): Ctx => {
   const project = new Project({
     compilerOptions: {
-      target: ScriptTarget.ES3,
+      target: ScriptTarget.ESNext,
+      strict: true,
+      alwaysStrict: true,
+      disableSizeLimit: true,
+      isolatedModules: true,
     },
   })
 
@@ -27,7 +31,7 @@ export const createContext = (options: CtxOptions): Ctx => {
   }
 
   const typeToString = (ty: Type | undefined): string =>
-    ty ? typeChecker.compilerObject.typeToString(ty.compilerType) : ''
+    ty ? typeChecker.getTypeText(ty) : ''
 
   const [resultTypeNode] = sourceFile.addStatements(
     `type ${RESULT_TYPE_NAME} = {}`
@@ -56,7 +60,9 @@ export const createContext = (options: CtxOptions): Ctx => {
   const getTypeValue = (ty: Type | undefined): any => {
     try {
       return JSON.parse(typeToString(ty))
-    } catch(_) { return }
+    } catch(_) {
+      return null
+    }
   }
 
   const ctx: Ctx = {

@@ -23,8 +23,10 @@ export const evaluateType = async (
   effTyp: Type
 ): Promise<string[]> => {
   const name = effTyp.getSymbol()?.getName()
-
   const args = effTyp.getTypeArguments()
+
+  // console.log(ctx.typeToString(effTyp))
+  // console.log(name, args.map(ctx.typeToString))
 
   return match(name, {
     DefineEffect: async () => {
