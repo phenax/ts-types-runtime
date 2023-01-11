@@ -1,5 +1,5 @@
 import { Do, Effect } from '../stdlib/effect'
-import { Print, PutString, PutStringLn } from '../stdlib/stdio'
+import { Print, PutStringLn } from '../stdlib/stdio'
 import { DefineEffect } from '../stdlib/sys'
 
 type Testi<m extends string, effs extends Effect[]> = [

@@ -24,9 +24,11 @@ export const evaluateType = async (
 ): Promise<string[]> => {
   const name = effTyp.getSymbol()?.getName()
 
+  const args = effTyp.getTypeArguments()
+
   return match(name, {
     DefineEffect: async () => {
-      const [nameTyp, exprTyp] = effTyp.getTypeArguments()
+      const [nameTyp, exprTyp] = args
       const name = nameTyp?.getLiteralValue() as string
       const exprStr = exprTyp?.getLiteralValue() as string
 
@@ -34,13 +36,19 @@ export const evaluateType = async (
       return []
     },
 
+    Pure: async () => {
+      const [valTyp] = args
+      const [resultKey, _] = ctx.createResult(ctx.typeToString(valTyp))
+      return [resultKey]
+    },
+
     Print: async () => {
-      console.log(...effTyp.getTypeArguments().map(ctx.typeToString))
+      console.log(...args.map(ctx.typeToString))
       return []
     },
 
     PutString: async () => {
-      const [strinTyp] = effTyp.getTypeArguments()
+      const [strinTyp] = args
       const typString = ctx.typeToString(strinTyp)
       const string = JSON.parse(
         !typString.startsWith('"') ? `"${typString}"` : typString
@@ -50,7 +58,7 @@ export const evaluateType = async (
     },
 
     Debug: async () => {
-      const [labelTyp, valueTyp] = effTyp.getTypeArguments()
+      const [labelTyp, valueTyp] = args
       const label = JSON.parse(ctx.typeToString(labelTyp))
       const value = ctx.typeToString(valueTyp)
       console.log(label, value)
@@ -59,7 +67,7 @@ export const evaluateType = async (
     },
 
     ReadFile: async () => {
-      const [pathTyp] = effTyp.getTypeArguments()
+      const [pathTyp] = args
       const filePath = JSON.parse(ctx.typeToString(pathTyp))
       const contents = await fs.readFile(filePath, 'utf-8')
       const [resultKey, _] = ctx.createResult(JSON.stringify(contents))
@@ -67,7 +75,7 @@ export const evaluateType = async (
     },
 
     WriteFile: async () => {
-      const [pathTyp, contentsTyp] = effTyp.getTypeArguments()
+      const [pathTyp, contentsTyp] = args
       const filePath = JSON.parse(ctx.typeToString(pathTyp))
       const contents = JSON.parse(ctx.typeToString(contentsTyp))
       await fs.writeFile(filePath, contents)
@@ -75,7 +83,7 @@ export const evaluateType = async (
     },
 
     Bind: async () => {
-      const [inputTyp, chainToKind] = effTyp.getTypeArguments()
+      const [inputTyp, chainToKind] = args
       const [resultKey] = inputTyp ? await evaluateType(ctx, inputTyp) : []
 
       const [_, compNode] = ctx.createResult(
@@ -93,7 +101,7 @@ export const evaluateType = async (
     },
 
     GetEnv: async () => {
-      const [envTyp] = effTyp.getTypeArguments()
+      const [envTyp] = args
       const envName = JSON.parse(ctx.typeToString(envTyp))
       const [resultKey, _] = ctx.createResult(
         `${JSON.stringify(process.env[envName] ?? '')}`
@@ -115,7 +123,7 @@ export const evaluateType = async (
     },
 
     JsExpr: async () => {
-      const [exprTyp] = effTyp.getTypeArguments()
+      const [exprTyp] = args
       const exprStr = JSON.parse(ctx.typeToString(exprTyp))
       const result = eval(`JSON.stringify(${exprStr})`)
       const [resultKey, _] = ctx.createResult(`${result}`)
@@ -123,7 +131,7 @@ export const evaluateType = async (
     },
 
     Seq: async () => {
-      const [effectTyps] = effTyp.getTypeArguments()
+      const [effectTyps] = args
       const effectResults = await evalList(
         ctx,
         effectTyps?.getTupleElements() ?? []
@@ -135,7 +143,7 @@ export const evaluateType = async (
     },
 
     Do: async () => {
-      const [effectTyps] = effTyp.getTypeArguments()
+      const [effectTyps] = args
       const effectResults = await evalList(
         ctx,
         effectTyps?.getTupleElements() ?? []
@@ -149,7 +157,7 @@ export const evaluateType = async (
 
     _: async () => {
       if (name && ctx.hasCustomEffect(name)) {
-        return ctx.runCustomEffect(name, effTyp.getTypeArguments())
+        return ctx.runCustomEffect(name, args)
       }
 
       console.log(`${name} effect is not handled`)

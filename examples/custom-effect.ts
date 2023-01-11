@@ -1,4 +1,5 @@
-import { Bind, DefineEffect, Effect, Kind1 } from '../stdlib/effect'
+import { Bind, Effect, Kind1 } from '../stdlib/effect'
+import { DefineEffect } from '../stdlib/sys'
 import { Print } from '../stdlib/stdio'
 
 interface Mathemagic<_A, _B> extends Effect {}

@@ -8,15 +8,15 @@ export interface Id extends Kind1 {
   return: this['input']
 }
 
-type ADTTT = { _type: string; value: any }
+type ADTDescr = { _type: string; value: any }
 
-interface ADTConstructor<A extends ADTTT> extends Kind1<A['value']> {
+interface ADTConstructor<A extends ADTDescr> extends Kind1<A['value']> {
   return: this['input'] extends infer Inp ? A & { value: Inp } : A
 }
 
-type Pat = Record<string, ADTTT>
+type Pat = Record<string, ADTDescr>
 export type ADT<D extends Record<string, any>> = {
   [k in keyof D]: { _type: k; value: D[k] }
 } extends infer Rec extends Pat
-  ? Rec[keyof Rec] & { [k in keyof Rec]: ADTConstructor<Rec[k]> }
+  ? { t: Rec[keyof Rec] } & { [k in keyof Rec]: ADTConstructor<Rec[k]> }
   : never
