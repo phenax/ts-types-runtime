@@ -4,6 +4,7 @@ import readline from 'readline'
 
 import { match } from './util'
 import { Ctx } from './types'
+import { assert } from 'console'
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -117,8 +118,25 @@ export const evaluateType = async (
     },
 
     Exit: async () => {
-      const exitCode = args[0] && ctx.getTypeValue(args[0])
-      process.exit(exitCode)
+      process.exit(args[0] && ctx.getTypeValue(args[0]))
+    },
+
+    Try: async () => {
+      const [effTyp, catchK] = args
+
+      try {
+        if (!effTyp) throw new Error('wow')
+        return await evaluateType(ctx, effTyp)
+      } catch(e) {
+        const error = JSON.stringify((e as any)?.message ?? e)
+        const catchResExpr = `(${ctx.typeToString(catchK)} & { input: ${error} })['return']`
+        const [resultKey, _] = ctx.createResult(catchResExpr)
+        return [resultKey]
+      }
+    },
+
+    Throw: async () => {
+      throw args[0] && ctx.getTypeValue(args[0])
     },
 
     ReadLine: async () => {
