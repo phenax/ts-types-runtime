@@ -17,6 +17,11 @@ export interface Ctx {
   getResultExpr: (key?: string) => string
   printResultNode: () => void
 
+  createRef: (ty: string) => string,
+  getRef: (key: string) => any,
+  setRef: (key: string, ty: string) => void,
+  deleteRef: (key: string) => void,
+
   addCustomEffect: (name: string, expr: string) => void
   runCustomEffect: (name: string, args: Type[]) => Promise<string[]>
   hasCustomEffect: (name: string) => boolean

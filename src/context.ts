@@ -65,12 +65,24 @@ export const createContext = (options: CtxOptions): Ctx => {
     }
   }
 
+  const refMap: Map<string, string> = new Map
+  const createRef = (ty: string): string => {
+    const key = uuid()
+    refMap.set(key, ty)
+    return key
+  }
+
   const ctx: Ctx = {
     sourceFile,
     typeChecker,
     entryPoint,
     typeToString,
     getTypeValue,
+
+    createRef,
+    getRef: (k: string) => refMap.get(k),
+    setRef: (k: string, ty: string) => refMap.set(k, ty),
+    deleteRef: (k: string) => refMap.delete(k),
 
     createResult,
     getResultExpr,

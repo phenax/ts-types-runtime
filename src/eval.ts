@@ -4,7 +4,6 @@ import readline from 'readline'
 
 import { match } from './util'
 import { Ctx } from './types'
-import { assert } from 'console'
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -36,6 +35,32 @@ export const evaluateType = async (
       const exprStr = exprTyp?.getLiteralValue() as string
 
       ctx.addCustomEffect(name, exprStr)
+      return []
+    },
+
+    CreateRef: async () => {
+      const val = ctx.typeToString(args[0])
+      const refKey = ctx.createRef(val)
+      const [resultKey, _] = ctx.createResult(JSON.stringify(refKey))
+      return [resultKey]
+    },
+
+    GetRef: async () => {
+      const refKey = ctx.getTypeValue(args[0])
+      const val = ctx.getRef(refKey)
+      if (!val) throw new Error('Ref has been deleted')
+      const [resultKey, _] = ctx.createResult(val)
+      return [resultKey]
+    },
+
+    SetRef: async () => {
+      const [ keyTy, valTyp ] = args
+      ctx.setRef(ctx.getTypeValue(keyTy), ctx.typeToString(valTyp))
+      return []
+    },
+
+    DeleteRef: async () => {
+      ctx.deleteRef(ctx.getTypeValue(args[0]))
       return []
     },
 
