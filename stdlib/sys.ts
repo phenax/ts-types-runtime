@@ -8,3 +8,6 @@ export interface JsExpr<_Expr extends string> extends Effect<any> {}
 
 export interface DefineEffect<_Name extends string, _Func extends string>
   extends Effect {}
+
+export interface Exit<_ extends number | undefined = undefined> extends Effect {}
+

@@ -116,6 +116,11 @@ export const evaluateType = async (
       return [resultKey]
     },
 
+    Exit: async () => {
+      const exitCode = args[0] && ctx.getTypeValue(args[0])
+      process.exit(exitCode)
+    },
+
     ReadLine: async () => {
       const line = await readLineFromStdin()
       const [resultKey, _] = ctx.createResult(`${JSON.stringify(line)}`)
