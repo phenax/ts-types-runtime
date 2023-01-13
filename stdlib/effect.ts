@@ -14,4 +14,3 @@ export interface Seq<_Effs extends Effect[]> extends Effect {}
 export interface Do<_Effs extends Effect[]> extends Effect {}
 
 export interface Pure<V> extends Effect<V> {}
-

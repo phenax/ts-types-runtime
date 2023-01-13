@@ -8,7 +8,6 @@ export interface Debug<_ extends string, T> extends Effect<T> {}
 
 export interface ReadLine extends Effect<string> {}
 
-export type PutStringLn<S extends string> =
-  S extends infer S extends string
-    ? PutString<`${S}\n`>
-    : never
+export type PutStringLn<S extends string> = S extends infer S extends string
+  ? PutString<`${S}\n`>
+  : never

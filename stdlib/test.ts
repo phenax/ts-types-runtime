@@ -1,4 +1,4 @@
-import { Effect } from "./effect";
+import { Effect } from './effect'
 
 export interface Config {
   compileTimeTestFailures: false
@@ -7,5 +7,6 @@ export interface Config {
 
 type Assertion = Config['compileTimeTestFailures'] extends true ? true : boolean
 
-export interface Assert<_B extends Assertion> extends Effect { }
-export interface Test<_m extends string, _effs extends Effect[]> extends Effect { }
+export interface Assert<_B extends Assertion> extends Effect {}
+export interface Test<_m extends string, _effs extends Effect[]>
+  extends Effect {}

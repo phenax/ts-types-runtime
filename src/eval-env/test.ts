@@ -12,7 +12,7 @@ export default (ctx: Ctx, args: Type[]) => ({
       }
 
       console.log('[✓]')
-    } catch(e) {
+    } catch (e) {
       console.log('[TEST FAILED]')
       throw e
     }

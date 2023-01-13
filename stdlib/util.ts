@@ -21,8 +21,10 @@ export type ADT<D extends Record<string, any>> = {
   ? { t: Rec[keyof Rec] } & { [k in keyof Rec]: ADTConstructor<Rec[k]> }
   : never
 
-export type Equals<Left, Right> =
-  [Left] extends [Right] ? ([Right] extends [Left] ? true : false) : false
+export type Equals<Left, Right> = [Left] extends [Right]
+  ? [Right] extends [Left]
+    ? true
+    : false
+  : false
 
 export type Not<B extends boolean> = B extends true ? false : true
-

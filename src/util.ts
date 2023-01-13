@@ -1,5 +1,5 @@
-import { Type } from "ts-morph"
-import { Ctx } from "./types"
+import { Type } from 'ts-morph'
+import { Ctx } from './types'
 
 export const match = <K extends string, R>(
   k: K | undefined,

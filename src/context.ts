@@ -61,12 +61,12 @@ export const createContext = (options: CtxOptions): Ctx => {
   const getTypeValue = (ty: Type | undefined): any => {
     try {
       return JSON.parse(typeToString(ty))
-    } catch(_) {
+    } catch (_) {
       return null
     }
   }
 
-  const refMap: Map<string, string> = new Map
+  const refMap: Map<string, string> = new Map()
   const createRef = (ty: string): string => {
     const key = uuid()
     refMap.set(key, ty)
@@ -83,7 +83,9 @@ export const createContext = (options: CtxOptions): Ctx => {
     typeToString,
     getTypeValue,
 
-    get currentEnv() { return currentEnv },
+    get currentEnv() {
+      return currentEnv
+    },
     setEnv,
 
     createRef,

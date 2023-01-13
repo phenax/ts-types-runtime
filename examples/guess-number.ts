@@ -9,7 +9,8 @@ export type main = [
 
 type Len<Ls extends any[]> = Ls['length'] extends number ? Ls['length'] : 0
 
-interface AskForGuess<N extends number, Attempts extends 0[]> extends Kind1<string> {
+interface AskForGuess<N extends number, Attempts extends 0[]>
+  extends Kind1<string> {
   return: `${this['input']}` extends `${N}`
     ? PutStringLn<'Yay! You got it right!'>
     : Do<

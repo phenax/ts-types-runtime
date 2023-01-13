@@ -5,8 +5,8 @@ import { Ctx } from './types'
 import * as builtins from './eval-env/builtins'
 
 type EffDefn = {
-  default: (ctx: Ctx, args: Type[]) => Record<string, () => Promise<string[]>>,
-  cleanup?: () => void,
+  default: (ctx: Ctx, args: Type[]) => Record<string, () => Promise<string[]>>
+  cleanup?: () => void
 }
 const mergeEffDefns = (a: EffDefn, b: EffDefn): EffDefn => ({
   default: (ctx: Ctx, args: Type[]) => ({
@@ -20,7 +20,7 @@ const mergeEffDefns = (a: EffDefn, b: EffDefn): EffDefn => ({
 })
 
 const cleanupActions = new Set<undefined | (() => void)>()
-export const cleanup = () => cleanupActions.forEach(f => f?.())
+export const cleanup = () => cleanupActions.forEach((f) => f?.())
 
 let prevEnv: string
 
@@ -37,16 +37,20 @@ export const evaluateType = async (
 
   const envDefns = await match(ctx.currentEnv, {
     node: () => import('./eval-env/node') as Promise<EffDefn>,
-    'test.node': async () => mergeEffDefns(
-      await import('./eval-env/test'),
-      await import('./eval-env/node'),
-    ),
+    'test.node': async () =>
+      mergeEffDefns(
+        await import('./eval-env/test'),
+        await import('./eval-env/node')
+      ),
     _: async () => {
       throw new Error(`Invalid env: ${ctx.currentEnv}`)
     },
   })
 
-  const { default: envEffects, cleanup } = mergeEffDefns(builtins as unknown as EffDefn, envDefns)
+  const { default: envEffects, cleanup } = mergeEffDefns(
+    builtins as unknown as EffDefn,
+    envDefns
+  )
 
   // Update cleanup if env has changed
   if (prevEnv !== ctx.currentEnv) {

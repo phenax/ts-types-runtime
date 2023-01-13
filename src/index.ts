@@ -6,7 +6,9 @@ import { evalList } from './util'
 const main = () => {
   program
     .name('ts-types-lang')
-    .description(`A runtime for typescript's type system that turns it into a general purpose, purely functional programming language!`)
+    .description(
+      `A runtime for typescript's type system that turns it into a general purpose, purely functional programming language!`
+    )
 
   program
     .command('run')
@@ -24,5 +26,4 @@ const main = () => {
   return program.parseAsync()
 }
 
-main()
-  .finally(() => cleanup())
+main().finally(() => cleanup())

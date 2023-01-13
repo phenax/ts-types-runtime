@@ -3,16 +3,19 @@ export type Zero = { _prev: null }
 export type Succ<N extends Nat> = { _prev: N }
 export type Pred<N extends Nat> = N extends Zero ? Zero : N['_prev']
 
-export type Add<A extends Nat, B extends Nat> =
-  A extends Zero ? B : Add<Pred<A>, Succ<B>>
+export type Add<A extends Nat, B extends Nat> = A extends Zero
+  ? B
+  : Add<Pred<A>, Succ<B>>
 
-export type ToNumber<N extends Nat, Acc extends 0[] = []> =
-  N extends Zero ? Acc['length']
-    : ToNumber<Pred<N>, [...Acc, 0]>
+export type ToNumber<N extends Nat, Acc extends 0[] = []> = N extends Zero
+  ? Acc['length']
+  : ToNumber<Pred<N>, [...Acc, 0]>
 
-export type FromNumber<N extends number, Res extends Nat = Zero, Acc extends 0[] = []> =
-  N extends Acc['length'] ? Res
-    : FromNumber<N, Succ<Res>, [...Acc, 0]>
+export type FromNumber<
+  N extends number,
+  Res extends Nat = Zero,
+  Acc extends 0[] = []
+> = N extends Acc['length'] ? Res : FromNumber<N, Succ<Res>, [...Acc, 0]>
 
 export type _0 = Zero
 export type _1 = Succ<_0>

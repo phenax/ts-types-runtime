@@ -13,11 +13,5 @@ interface ConstK<Val> extends Kind1<unknown, Val> {
 
 export type main = [
   Bind<ReadFile<'./default.nix'>, PrintK>,
-  Bind<
-    Try<
-      ReadFile<'./unicorn'>,
-      ConstK<"hello world">
-    >,
-    PrintK
-  >,
+  Bind<Try<ReadFile<'./unicorn'>, ConstK<'hello world'>>, PrintK>
 ]
