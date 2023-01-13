@@ -20,5 +20,5 @@
     "noUncheckedIndexedAccess": true,
     "skipLibCheck": false
   },
-  "include": ["./src/**/*", "./stdlib/**/*", "./examples/**/*"]
+  "include": ["./**/*.ts"]
 }
