@@ -17,6 +17,9 @@ export interface Ctx {
   getResultExpr: (key?: string) => string
   printResultNode: () => void
 
+  currentEnv: string,
+  setEnv: (e: string) => void,
+
   createRef: (ty: string) => string,
   getRef: (key: string) => any,
   setRef: (key: string, ty: string) => void,
@@ -25,4 +28,6 @@ export interface Ctx {
   addCustomEffect: (name: string, expr: string) => void
   runCustomEffect: (name: string, args: Type[]) => Promise<string[]>
   hasCustomEffect: (name: string) => boolean
+
+  evaluateType: (ctx: Ctx, effTyp: Type) => Promise<string[]>
 }

@@ -2,6 +2,7 @@ import { Project, ScriptTarget, Type, Node, SyntaxKind } from 'ts-morph'
 import path from 'path'
 import { v4 as uuid } from 'uuid'
 import { Ctx } from './types'
+import { evaluateType } from './eval'
 
 const RESULT_TYPE_NAME = '__$result'
 
@@ -72,12 +73,18 @@ export const createContext = (options: CtxOptions): Ctx => {
     return key
   }
 
+  let currentEnv = 'node'
+  const setEnv = (e: string) => (currentEnv = e)
+
   const ctx: Ctx = {
     sourceFile,
     typeChecker,
     entryPoint,
     typeToString,
     getTypeValue,
+
+    get currentEnv() { return currentEnv },
+    setEnv,
 
     createRef,
     getRef: (k: string) => refMap.get(k),
@@ -101,6 +108,8 @@ export const createContext = (options: CtxOptions): Ctx => {
       return []
     },
     hasCustomEffect: (name) => customEffects[name] !== undefined,
+
+    evaluateType,
   }
 
   return ctx
