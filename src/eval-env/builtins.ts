@@ -1,5 +1,6 @@
 import { Type } from 'ts-morph'
 import { Ctx } from "../types"
+import { evalList } from '../util'
 
 export default (ctx: Ctx, args: Type[]) => ({
     SetEvalEnvironment: async () => {

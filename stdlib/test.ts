@@ -2,6 +2,7 @@ import { Effect } from "./effect";
 
 export interface Config {
   compileTimeTestFailures: false
+  stopAtFailure: true // TODO: stopAtFailure
 }
 
 type Assertion = Config['compileTimeTestFailures'] extends true ? true : boolean

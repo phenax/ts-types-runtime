@@ -6,7 +6,7 @@ import * as builtins from './eval-env/builtins'
 
 type EffDefn = {
   default: (ctx: Ctx, args: Type[]) => Record<string, () => Promise<string[]>>,
-  cleanup: () => void,
+  cleanup?: () => void,
 }
 const mergeEffDefns = (a: EffDefn, b: EffDefn): EffDefn => ({
   default: (ctx: Ctx, args: Type[]) => ({
@@ -14,13 +14,13 @@ const mergeEffDefns = (a: EffDefn, b: EffDefn): EffDefn => ({
     ...b.default(ctx, args),
   }),
   cleanup: () => {
-    a.cleanup()
-    b.cleanup()
+    a.cleanup?.()
+    b.cleanup?.()
   },
 })
 
-const cleanupActions = new Set<() => void>()
-export const cleanup = () => cleanupActions.forEach(f => f())
+const cleanupActions = new Set<undefined | (() => void)>()
+export const cleanup = () => cleanupActions.forEach(f => f?.())
 
 let prevEnv: string
 
@@ -28,6 +28,7 @@ export const evaluateType = async (
   ctx: Ctx,
   effTyp: Type
 ): Promise<string[]> => {
+  // TODO: base type check
   const name = effTyp.getSymbol()?.getName()
   const args = effTyp.getTypeArguments()
 
@@ -66,12 +67,4 @@ export const evaluateType = async (
       throw new Error(`${name} effect is not handled`)
     },
   })
-}
-
-export const evalList = async (ctx: Ctx, effectTyps: Type[]) => {
-  const effectResults: string[] = []
-  for (const item of effectTyps ?? []) {
-    effectResults.push(...(await evaluateType(ctx, item)))
-  }
-  return effectResults
 }

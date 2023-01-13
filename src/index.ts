@@ -1,6 +1,7 @@
 import { program } from 'commander'
 import { createContext } from './context'
-import { cleanup, evalList } from './eval'
+import { cleanup } from './eval'
+import { evalList } from './util'
 
 const main = () => {
   program
