@@ -7,9 +7,10 @@ export const match = <K extends string, R>(
 ) => (k && pattern[k] ? pattern[k]() : pattern._())
 
 export const evalList = async (ctx: Ctx, effectTyps: Type[]) => {
-  const effectResults: string[] = []
+  const effectResults: (string | undefined)[] = []
   for (const item of effectTyps ?? []) {
-    effectResults.push(...(await ctx.evaluateType(ctx, item)))
+    const [resultKey] = await ctx.evaluateType(ctx, item)
+    effectResults.push(resultKey ? resultKey : undefined)
   }
   return effectResults
 }
@@ -68,8 +69,6 @@ export const applyFunc = (
 
     return undefined
   })()
-
-  // TODO: Cleanup unwanted result node values
 
   if (!resultType) {
     throw new Error('Couldnt get result for function application')

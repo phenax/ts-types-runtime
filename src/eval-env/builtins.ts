@@ -49,6 +49,8 @@ export default (ctx: Ctx, args: Type[]) => ({
     return [resultKey]
   },
 
+  Noop: async () => [],
+
   Print: async () => {
     console.log(...args.map(ctx.typeToString))
     return []
@@ -77,7 +79,7 @@ export default (ctx: Ctx, args: Type[]) => ({
     const resultType = applyFunc(
       ctx,
       chainToKind,
-      resultKey ? `(${ctx.getResultExpr(resultKey)})['output']` : 'never'
+      resultKey ? `${ctx.getResultExpr(resultKey)}` : 'never'
     )
     return ctx.evaluateType(ctx, resultType)
   }),
@@ -102,7 +104,7 @@ export default (ctx: Ctx, args: Type[]) => ({
     return [value]
   },
 
-  Try: async () => {
+  Try: ctx.withScope(async () => {
     const [effTyp, catchK] = args
 
     try {
@@ -113,7 +115,7 @@ export default (ctx: Ctx, args: Type[]) => ({
       const resultType = applyFunc(ctx, catchK, error)
       return ctx.evaluateType(ctx, resultType)
     }
-  },
+  }),
 
   Throw: async () => {
     throw args[0] && ctx.getTypeValue(args[0])
@@ -134,8 +136,8 @@ export default (ctx: Ctx, args: Type[]) => ({
       effectTyps?.getTupleElements() ?? []
     )
     const [resultKey, _] = ctx.createResult(`[
-        ${effectResults.map(ctx.getResultExpr).join(', ')}
-      ]`)
+      ${effectResults.map(ctx.getResultExpr).join(', ')}
+    ]`)
     return [resultKey]
   }),
 
@@ -148,7 +150,7 @@ export default (ctx: Ctx, args: Type[]) => ({
     // TODO: Use last type's result instead of last result key
     const lastResKey = effectResults[effectResults.length - 1]
     const [resultKey, _] = ctx.createResult(
-      `(${ctx.getResultExpr(lastResKey)})['output']`
+      `${ctx.getResultExpr(lastResKey)}`
     )
     return [resultKey]
   }),
