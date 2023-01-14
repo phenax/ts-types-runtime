@@ -15,15 +15,12 @@ export interface ShowAssertionError<_L extends unknown, _R extends unknown> exte
 
 export type AssertEquals<Left, Right> = Try<
   Assert<Equals<Left, Right>>,
-  <e extends string>() => Do<[
+  <m>() => Do<[
     ShowAssertionError<Left, Right>,
-    Throw<e>,
+    Throw<m>,
   ]>
 >
 
 export interface AssertEqualsK<Right extends unknown> extends Kind1 {
   return: AssertEquals<this['input'], Right>
 }
-
-// TODO: export interface AssertFails?
-

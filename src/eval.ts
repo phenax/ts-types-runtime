@@ -32,7 +32,7 @@ export const evaluateType = async (
   const name = effTyp.getSymbol()?.getName()
   const args = effTyp.getTypeArguments()
 
-  // console.log('>>>>>', name)
+  //console.log('>>>>>', name)
   // console.log(ctx.typeToString(effTyp))
   // console.log(name, args.map(ctx.typeToString))
 
@@ -67,7 +67,7 @@ export const evaluateType = async (
   return match(name, {
     ...envEffects(ctx, args),
     _: async () => {
-      console.log(ctx.typeToString(effTyp))
+      console.log('\n[EffectType]', ctx.typeToString(effTyp), '\n')
       throw new Error(`${name} effect is not handled`)
     },
   })

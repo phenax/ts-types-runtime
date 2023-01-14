@@ -56,6 +56,15 @@ export const createContext = (options: CtxOptions): Ctx => {
     return [resultKey, node]
   }
 
+  const removeResult = (key?: string) => {
+    if (!key) return
+    resultTypeNode
+      ?.asKind(SyntaxKind.TypeAliasDeclaration)
+      ?.getChildAtIndexIfKind(3, SyntaxKind.TypeLiteral)
+      ?.getProperty(key)
+      ?.remove()
+  }
+
   const customEffects: Record<string, (args: Type[], ctx: Ctx) => any> = {}
 
   const getTypeValue = (ty: Type | undefined): any => {
@@ -97,6 +106,7 @@ export const createContext = (options: CtxOptions): Ctx => {
 
     createResult,
     getResultExpr,
+    removeResult,
     printResultNode: () => console.log(resultTypeNode?.print()),
 
     addCustomEffect: (name, expr) => {
