@@ -1,6 +1,54 @@
-import { Type } from 'ts-morph'
+import { SyntaxKind, Type } from 'ts-morph'
 import { Ctx } from '../types'
 import { evalList } from '../util'
+
+const applyFunc = (ctx: Ctx, fn: Type | undefined, val: string): Type => {
+  const resultType = (() => {
+    const baseTypes = fn?.getBaseTypes().flatMap(t => t.getSymbol()?.getName())
+
+    if (baseTypes?.includes('Kind1')) {
+      const [_, resultNode] = ctx.createResult(
+        `(${ctx.typeToString(fn)} & { input: ${val} })['return']`
+      )
+      return resultNode
+        ?.getType()
+        .getProperty('output')
+        ?.getTypeAtLocation(resultNode)
+    } else {
+      const [_key, resultNode] = ctx.createResult(`ReturnType<${ctx.typeToString(fn)}>`)
+
+      const resValueNode = resultNode
+        ?.asKind(SyntaxKind.PropertySignature)
+        ?.getChildAtIndexIfKind(2, SyntaxKind.TypeLiteral)
+        ?.getProperty('output')
+        ?.getChildAtIndexIfKind(2, SyntaxKind.TypeReference)
+
+      const functionNode = resValueNode
+        ?.getChildAtIndexIfKind(1, SyntaxKind.SyntaxList)
+        ?.getFirstChildIfKind(SyntaxKind.FunctionType)
+
+      if (functionNode) {
+        const typeParameters = functionNode.getTypeParameters() ?? []
+
+        if (typeParameters.length > 0) {
+          typeParameters[0]?.getConstraint()?.replaceWithText(val)
+        }
+
+        return resValueNode?.getType()
+      }
+    }
+
+    return undefined
+  })()
+
+  // TODO: Cleanup unwanted result node values
+
+  if (!resultType) {
+    throw new Error('Fuck shit')
+  }
+
+  return resultType
+}
 
 export default (ctx: Ctx, args: Type[]) => ({
   SetEvalEnvironment: async () => {
@@ -75,18 +123,12 @@ export default (ctx: Ctx, args: Type[]) => ({
     const [resultKey] = inputTyp ? await ctx.evaluateType(ctx, inputTyp) : []
 
     // TODO: Handle resultKey undefined case
-    const [_, compNode] = ctx.createResult(
-      `(${ctx.typeToString(chainToKind)} & { input: (${ctx.getResultExpr(
-        resultKey
-      )})['output'] })['return']`
-    )
-    // TODO: Avoid using getTypeAtLocation?
-    const compTyp = compNode
-      ?.getType()
-      .getProperty('output')
-      ?.getTypeAtLocation(ctx.entryPoint)
 
-    return compTyp ? await ctx.evaluateType(ctx, compTyp) : []
+    const resultType =
+      applyFunc(ctx, chainToKind, `(${ctx.getResultExpr(resultKey)})['output']`)
+    const res = await ctx.evaluateType(ctx, resultType)
+
+    return res
   },
 
   Try: async () => {

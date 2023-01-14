@@ -7,7 +7,11 @@ export interface Kind1<Inp = unknown, Out = unknown> {
   return: Out
 }
 
-export interface Bind<_Eff extends Effect, _Fn extends Kind1> extends Effect {}
+type Func<Inp = unknown, Out = unknown>
+  = Kind1<Inp, Out>
+  | (<_T extends Inp>() => Out)
+
+export interface Bind<_Eff extends Effect, _Fn extends Func> extends Effect {}
 
 export interface Seq<_Effs extends Effect[]> extends Effect {}
 
