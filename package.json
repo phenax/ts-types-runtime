@@ -12,6 +12,7 @@
   "scripts": {
     "build": "tsc",
     "cli": "ts-node src/index.ts",
+    "docs": "typedoc --plugin typedoc-plugin-markdown ./stdlib/*.ts",
     "format": "prettier --write ./**/*.ts",
     "postinstall": "yarn build",
     "prepublish": "yarn build"
@@ -26,6 +27,8 @@
   },
   "devDependencies": {
     "prettier": "^2.8.3",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "typedoc": "^0.23.24",
+    "typedoc-plugin-markdown": "^3.14.0"
   }
 }
