@@ -21,6 +21,25 @@
 
 Ƭ **AssertEquals**<`Left`, `Right`\>: [`Try`](../interfaces/exception.Try.md)<[`Assert`](../interfaces/test.Assert.md)<[`Equals`](util.md#equals)<`Left`, `Right`\>\>, <m\>() => [`Do`](../interfaces/effect.Do.md)<[[`ShowAssertionError`](../interfaces/test.ShowAssertionError.md)<`Left`, `Right`\>, [`Throw`](../interfaces/exception.Throw.md)<`m`\>]\>\>
 
+Assert if left and right values are equal structurally
+
+**`Type Param`**
+
+Left value
+
+**`Type Param`**
+
+Right value
+
+**`Example`**
+
+```ts
+type main = [
+  AssertEquals<`Foo ${'bar'}`, 'Foo bar'>
+  AssertEquals<[2, ...[3, 4]], [2, 3, 4]>
+]
+```
+
 #### Type parameters
 
 | Name |
@@ -30,4 +49,4 @@
 
 #### Defined in
 
-[test.ts:28](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/test.ts#L28)
+[test.ts:59](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/test.ts#L59)

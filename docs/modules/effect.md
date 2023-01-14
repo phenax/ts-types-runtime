@@ -49,4 +49,4 @@ type main = Bind<
 
 #### Defined in
 
-[effect.ts:56](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/effect.ts#L56)
+[effect.ts:56](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/effect.ts#L56)

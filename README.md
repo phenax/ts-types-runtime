@@ -1,36 +1,52 @@
-# TS Types lang [WIP]
-A runtime for typescript's **type system** that turns it into a **general purpose**, **purely functional** programming language!
+# TS Types lang
+A runtime for typescript's **type system** that turns it into a **general purpose**, **purely functional** programming language with effects!
 
-Take a look at the [./examples](./examples) directory for examples on how to write a program in typescript types
+### Documentation
+- [stdlib reference](./docs/modules.md)
+- [examples](./examples/)
 
 
 ### Example
 
+Take a look at the [./examples](./examples) directory for more examples on how to write a program in typescript types
+
 ```typescript
-import { Bind, Kind1, Do } from 'ts-types-lang/stdlib/effect'
+import { Bind } from 'ts-types-lang/stdlib/effect'
 import { PutString, PutStringLn, ReadLine } from 'ts-types-lang/stdlib/stdio'
 
-// :: string -> Effect ()
-interface GreetK extends Kind1<string> {
-  return: PutString<`Hello, ${this['input']}`>,
-}
-
-// main :: [Effect ()] | Effect ()
 export type main = [
   PutString<"Your name? ">,
-  Bind<ReadLine, GreetK>,
+  // Read a line from stdin and then greet
+  Bind<ReadLine, <name extends string>() =>
+    PutStringLn<`Hello, ${name}`>>,
 ]
 ```
 
-To run it -
+### Run a types-lang module
+
+Install it -
+```bash
+npm i --save ts-types-lang
+# OR
+yarn add ts-types-lang
+```
+
+Or just run it -
 ```bash
 npx tsr run ./examples/guess-number.ts
-// OR
+# OR
 yarn exec tsr run ./examples/guess-number.ts
 ```
 
 
-### Why?
+### FAQ
 
+#### Why?
+I dunno
+
+#### How?
+I dunno
+
+#### What?
 I dunno
 

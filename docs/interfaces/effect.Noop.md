@@ -4,12 +4,12 @@
 
 [effect](../modules/effect.md).Noop
 
-Generic interface for declaring effects
+Noop effect that does nothing (returns undefined)
 
 **`Example`**
 
 ```ts
-interface MyEffect extends Effect<string[]> {}
+type main = Bind<Noop, <t extends undefined>() => Print<t>>
 ```
 
 ## Hierarchy

@@ -45,7 +45,7 @@ type result = ApplyK<SomeFunc, 200>
 
 #### Defined in
 
-[effect.ts:35](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/effect.ts#L35)
+[effect.ts:35](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/effect.ts#L35)
 
 ___
 
@@ -59,4 +59,4 @@ ___
 
 #### Defined in
 
-[util.ts:9](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/util.ts#L9)
+[util.ts:9](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/util.ts#L9)

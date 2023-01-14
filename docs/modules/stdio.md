@@ -30,4 +30,4 @@
 
 #### Defined in
 
-[stdio.ts:11](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/stdio.ts#L11)
+[stdio.ts:11](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/stdio.ts#L11)

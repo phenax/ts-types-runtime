@@ -32,7 +32,7 @@
 
 #### Defined in
 
-[util.ts:23](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/util.ts#L23)
+[util.ts:23](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/util.ts#L23)
 
 ___
 
@@ -49,7 +49,7 @@ ___
 
 #### Defined in
 
-[util.ts:5](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/util.ts#L5)
+[util.ts:5](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/util.ts#L5)
 
 ___
 
@@ -66,7 +66,7 @@ ___
 
 #### Defined in
 
-[util.ts:29](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/util.ts#L29)
+[util.ts:29](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/util.ts#L29)
 
 ___
 
@@ -90,7 +90,7 @@ ___
 
 #### Defined in
 
-[util.ts:7](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/util.ts#L7)
+[util.ts:7](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/util.ts#L7)
 
 ___
 
@@ -106,7 +106,7 @@ ___
 
 #### Defined in
 
-[util.ts:3](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/util.ts#L3)
+[util.ts:3](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/util.ts#L3)
 
 ___
 
@@ -122,4 +122,4 @@ ___
 
 #### Defined in
 
-[util.ts:35](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/util.ts#L35)
+[util.ts:35](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/util.ts#L35)

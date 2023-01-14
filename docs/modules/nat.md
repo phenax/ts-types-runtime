@@ -36,7 +36,7 @@
 
 #### Defined in
 
-[nat.ts:6](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/nat.ts#L6)
+[nat.ts:6](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/nat.ts#L6)
 
 ___
 
@@ -54,7 +54,7 @@ ___
 
 #### Defined in
 
-[nat.ts:14](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/nat.ts#L14)
+[nat.ts:14](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/nat.ts#L14)
 
 ___
 
@@ -64,7 +64,7 @@ ___
 
 #### Defined in
 
-[nat.ts:1](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/nat.ts#L1)
+[nat.ts:1](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/nat.ts#L1)
 
 ___
 
@@ -80,7 +80,7 @@ ___
 
 #### Defined in
 
-[nat.ts:4](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/nat.ts#L4)
+[nat.ts:4](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/nat.ts#L4)
 
 ___
 
@@ -102,7 +102,7 @@ ___
 
 #### Defined in
 
-[nat.ts:3](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/nat.ts#L3)
+[nat.ts:3](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/nat.ts#L3)
 
 ___
 
@@ -119,7 +119,7 @@ ___
 
 #### Defined in
 
-[nat.ts:10](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/nat.ts#L10)
+[nat.ts:10](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/nat.ts#L10)
 
 ___
 
@@ -135,7 +135,7 @@ ___
 
 #### Defined in
 
-[nat.ts:2](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/nat.ts#L2)
+[nat.ts:2](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/nat.ts#L2)
 
 ___
 
@@ -145,7 +145,7 @@ ___
 
 #### Defined in
 
-[nat.ts:20](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/nat.ts#L20)
+[nat.ts:20](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/nat.ts#L20)
 
 ___
 
@@ -155,7 +155,7 @@ ___
 
 #### Defined in
 
-[nat.ts:21](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/nat.ts#L21)
+[nat.ts:21](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/nat.ts#L21)
 
 ___
 
@@ -165,7 +165,7 @@ ___
 
 #### Defined in
 
-[nat.ts:22](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/nat.ts#L22)
+[nat.ts:22](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/nat.ts#L22)
 
 ___
 
@@ -175,7 +175,7 @@ ___
 
 #### Defined in
 
-[nat.ts:23](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/nat.ts#L23)
+[nat.ts:23](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/nat.ts#L23)
 
 ___
 
@@ -185,7 +185,7 @@ ___
 
 #### Defined in
 
-[nat.ts:24](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/nat.ts#L24)
+[nat.ts:24](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/nat.ts#L24)
 
 ___
 
@@ -195,7 +195,7 @@ ___
 
 #### Defined in
 
-[nat.ts:25](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/nat.ts#L25)
+[nat.ts:25](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/nat.ts#L25)
 
 ___
 
@@ -205,4 +205,4 @@ ___
 
 #### Defined in
 
-[nat.ts:26](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/nat.ts#L26)
+[nat.ts:26](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/nat.ts#L26)

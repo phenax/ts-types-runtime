@@ -1,9 +1,9 @@
 {
   "name": "ts-types-lang",
   "version": "0.0.2",
-  "description": "A runtime for typescript types",
-  "main": "stdlib/index.ts",
-  "repository": "https://github.com/phenax/ts-types-runtime-environment",
+  "description": "A runtime for typescript's type system that turns it into a general purpose, purely functional programming language with effects!",
+  "main": "stdlib/effects.ts",
+  "repository": "https://github.com/phenax/ts-types-runtime",
   "author": "Akshay Nair <phenax5@gmail.com>",
   "license": "MIT",
   "bin": {

@@ -4,27 +4,25 @@
 
 [test](../modules/test.md).AssertEqualsK
 
-An implementation of `* -> *` higher-kinded type
+An alternate point-free api for [AssertEquals](../modules/test.md#assertequals)
+
+**`Type Param`**
+
+Right value
 
 **`Example`**
 
-You can define a return property for the function body
-  and use `this['input']` to access the argument
-  Uses - [ApplyK](../modules/util.md#applyk)
-
 ```ts
-interface SomeFunc extends Kind1<number, string> {
-  return: `Your number is ${this['input']}`,
-}
-
-type result = ApplyK<SomeFunc, 200>
+type main = [
+  Bind<JsExpr<'21 * 3'>, AssertEqualsK<63>>
+]
 ```
 
 ## Type parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `Right` | extends `unknown` | The input type |
+| Name | Type |
+| :------ | :------ |
+| `Right` | extends `unknown` |
 
 ## Hierarchy
 
@@ -51,7 +49,7 @@ type result = ApplyK<SomeFunc, 200>
 
 #### Defined in
 
-[effect.ts:35](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/effect.ts#L35)
+[effect.ts:35](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/effect.ts#L35)
 
 ___
 
@@ -65,4 +63,4 @@ ___
 
 #### Defined in
 
-[test.ts:34](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/test.ts#L34)
+[test.ts:77](https://github.com/phenax/ts-types-runtime-environment/blob/e75a5a1/stdlib/test.ts#L77)
