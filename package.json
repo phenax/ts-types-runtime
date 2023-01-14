@@ -11,9 +11,10 @@
   },
   "scripts": {
     "build": "tsc",
+    "cli": "ts-node src/index.ts",
     "format": "prettier --write ./**/*.ts",
     "postinstall": "yarn build",
-    "cli": "ts-node src/index.ts"
+    "prepublish": "yarn build"
   },
   "dependencies": {
     "@types/node": "^18.11.18",

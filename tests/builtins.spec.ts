@@ -9,7 +9,7 @@ import {
   Seq,
 } from '../stdlib/effect'
 import { Throw, Try } from '../stdlib/exception'
-import { Print, PutStringLn } from '../stdlib/stdio'
+import { PutStringLn } from '../stdlib/stdio'
 import { DefineEffect, JsExpr, SetEvalEnvironment } from '../stdlib/sys'
 import { Test, AssertEqualsK, AssertEquals } from '../stdlib/test'
 
