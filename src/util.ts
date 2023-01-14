@@ -14,7 +14,11 @@ export const evalList = async (ctx: Ctx, effectTyps: Type[]) => {
   return effectResults
 }
 
-export const applyFunc = (ctx: Ctx, fn: Type | undefined, val: string): Type => {
+export const applyFunc = (
+  ctx: Ctx,
+  fn: Type | undefined,
+  val: string
+): Type => {
   const resultType = (() => {
     const baseTypes = fn
       ?.getBaseTypes()
@@ -73,4 +77,3 @@ export const applyFunc = (ctx: Ctx, fn: Type | undefined, val: string): Type => 
 
   return resultType
 }
-

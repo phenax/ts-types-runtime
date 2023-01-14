@@ -14,7 +14,7 @@ export interface Ctx {
   getTypeValue: (ty: Type | undefined) => any
 
   createResult: (ty: string) => [string, Node | undefined]
-  removeResult: (key?: string) => void,
+  removeResult: (key?: string) => void
   getResultExpr: (key?: string) => string
   printResultNode: () => void
 
