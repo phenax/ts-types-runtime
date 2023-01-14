@@ -1,5 +1,5 @@
-import { Effect, Kind1 } from './effect'
+import { Effect, Func } from './effect'
 
-export interface Try<_E extends Effect, _Catch extends Kind1> extends Effect {}
+export interface Try<_E extends Effect, _Catch extends Func> extends Effect {}
 
 export interface Throw<_E> extends Effect {}

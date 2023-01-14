@@ -7,7 +7,7 @@ export interface Kind1<Inp = unknown, Out = unknown> {
   return: Out
 }
 
-type Func<Inp = unknown, Out = unknown>
+export type Func<Inp = unknown, Out = unknown>
   = Kind1<Inp, Out>
   | (<_T extends Inp>() => Out)
 

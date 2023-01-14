@@ -7,11 +7,12 @@ interface PrintK extends Kind1<string> {
   return: PutStringLn<this['input']>
 }
 
-interface ConstK<Val> extends Kind1<unknown, Val> {
-  return: Val
-}
-
 export type main = [
-  Bind<ReadFile<'./default.nix'>, PrintK>,
-  Bind<Try<ReadFile<'./unicorn'>, ConstK<'hello world'>>, PrintK>
+  Bind<ReadFile<'./default.nix'>, <contents extends string>() =>
+    PutStringLn<contents>>,
+
+  Try<
+    Bind<ReadFile<'./unicorn'>, PrintK>,
+    <M extends string>() => PutStringLn<`ERROR: ${M}`>
+  >
 ]

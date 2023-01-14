@@ -2,10 +2,15 @@ import { Kind1 } from './effect'
 
 export type Let<f extends (...args: any) => any> = ReturnType<f>
 
-export type Apply<K extends Kind1, Val> = (K & { input: Val })['return']
+export type ApplyK<K extends Kind1, Val> = (K & { input: Val })['return']
 
-export interface Id extends Kind1 {
+export type Id = <T>() => T
+export interface IdK extends Kind1 {
   return: this['input']
+}
+
+export interface ConstK<Val> extends Kind1<unknown, Val> {
+  return: Val
 }
 
 type ADTDescr = { _type: string; value: any }

@@ -31,7 +31,12 @@ const applyFunc = (ctx: Ctx, fn: Type | undefined, val: string): Type => {
         const typeParameters = functionNode.getTypeParameters() ?? []
 
         if (typeParameters.length > 0) {
-          typeParameters[0]?.getConstraint()?.replaceWithText(val)
+          const constraint = typeParameters[0]?.getConstraint()
+          if (constraint) {
+            constraint?.replaceWithText(val)
+          } else {
+            typeParameters[0]?.setConstraint(val)
+          }
         }
 
         return resValueNode?.getType()
@@ -126,9 +131,7 @@ export default (ctx: Ctx, args: Type[]) => ({
 
     const resultType =
       applyFunc(ctx, chainToKind, `(${ctx.getResultExpr(resultKey)})['output']`)
-    const res = await ctx.evaluateType(ctx, resultType)
-
-    return res
+    return ctx.evaluateType(ctx, resultType)
   },
 
   Try: async () => {
@@ -139,11 +142,8 @@ export default (ctx: Ctx, args: Type[]) => ({
       return await ctx.evaluateType(ctx, effTyp)
     } catch (e) {
       const error = JSON.stringify((e as any)?.message ?? e)
-      const catchResExpr = `(${ctx.typeToString(
-        catchK
-      )} & { input: ${error} })['return']`
-      const [resultKey, _] = ctx.createResult(catchResExpr)
-      return [resultKey]
+      const resultType = applyFunc(ctx, catchK, error)
+      return ctx.evaluateType(ctx, resultType)
     }
   },
 
