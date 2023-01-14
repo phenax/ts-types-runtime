@@ -6,10 +6,10 @@ const applyFunc = (ctx: Ctx, fn: Type | undefined, val: string): Type => {
   const resultType = (() => {
     const baseTypes = fn
       ?.getBaseTypes()
-      .flatMap((t) => t.getSymbol()?.getName())
+      .flatMap((t) => t.getSymbol()?.getName() ?? [])
 
-    if (baseTypes?.includes('Kind1')) {
-      const [_, resultNode] = ctx.createResult(
+    if (!!fn?.getProperty('return') || baseTypes?.includes('Kind1')) {
+      const [_key, resultNode] = ctx.createResult(
         `(${ctx.typeToString(fn)} & { input: ${val} })['return']`
       )
       return resultNode
@@ -53,7 +53,7 @@ const applyFunc = (ctx: Ctx, fn: Type | undefined, val: string): Type => {
   // TODO: Cleanup unwanted result node values
 
   if (!resultType) {
-    throw new Error('Fuck shit')
+    throw new Error('Couldnt get result for function application')
   }
 
   return resultType

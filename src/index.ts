@@ -15,12 +15,17 @@ const main = () => {
     .description('Run a typescript .ts file')
     .argument('<file>', 'Typescript file to run')
     .action(async (filePath) => {
-      const ctx = createContext({ filePath })
-      const resultType = ctx.entryPoint.getType()
-      const effects = resultType.isTuple()
-        ? resultType.getTupleElements()
-        : [resultType]
-      await evalList(ctx, effects)
+      try {
+        const ctx = createContext({ filePath })
+        const resultType = ctx.entryPoint.getType()
+        const effects = resultType.isTuple()
+          ? resultType.getTupleElements()
+          : [resultType]
+        await evalList(ctx, effects)
+      } catch (e) {
+        console.error(e)
+        process.exit(1)
+      }
     })
 
   return program.parseAsync()

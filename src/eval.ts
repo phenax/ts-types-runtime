@@ -32,6 +32,7 @@ export const evaluateType = async (
   const name = effTyp.getSymbol()?.getName()
   const args = effTyp.getTypeArguments()
 
+  // console.log('>>>>>', name)
   // console.log(ctx.typeToString(effTyp))
   // console.log(name, args.map(ctx.typeToString))
 
@@ -58,6 +59,7 @@ export const evaluateType = async (
     prevEnv = ctx.currentEnv
   }
 
+  // Evaluate custom effects (overrides builtins)
   if (name && ctx.hasCustomEffect(name)) {
     return ctx.runCustomEffect(name, args)
   }
