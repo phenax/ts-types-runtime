@@ -1,4 +1,4 @@
-import { Bind, Kind1 } from '../stdlib/effect'
+import { Bind, BindTo, Do, Kind1, Label } from '../stdlib/effect'
 import { PutStringLn } from '../stdlib/stdio'
 import { ReadFile } from '../stdlib/fs'
 import { Try } from '../stdlib/exception'
@@ -8,8 +8,21 @@ interface PrintK extends Kind1<string> {
 }
 
 export type main = [
-  Bind<ReadFile<'./default.nix'>, <contents extends string>() =>
-    PutStringLn<contents>>,
+  Do<[
+    BindTo<"contents", ReadFile<'./bin.js'>>,
+    PutStringLn<"------">,
+    Bind<Label<"contents">, <c extends string>() => PutStringLn<c>>,
+  ]>,
+
+  Try<Bind<Label<"contents">, PrintK>, <e extends string>() =>
+    PutStringLn<`ERROR: ${e}`>>,
+
+  PutStringLn<"-------------">,
+
+  Bind<ReadFile<'./default.nix'>, <c extends string>() =>
+    PutStringLn<c>>,
+
+  PutStringLn<"-------------">,
 
   Try<
     Bind<ReadFile<'./unicorn'>, PrintK>,

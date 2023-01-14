@@ -76,6 +76,8 @@ export const createContext = (options: CtxOptions): Ctx => {
   let currentEnv = 'node'
   const setEnv = (e: string) => (currentEnv = e)
 
+  const environment: Array<Map<string, string>> = []
+
   const ctx: Ctx = {
     sourceFile,
     typeChecker,
@@ -112,6 +114,27 @@ export const createContext = (options: CtxOptions): Ctx => {
     hasCustomEffect: (name) => customEffects[name] !== undefined,
 
     evaluateType,
+
+    newScope() {
+      environment.unshift(new Map)
+    },
+    addToScope(name, resKey) {
+      if (environment.length === 0) ctx.newScope()
+      const curScope = environment[0]
+      curScope?.set(name, resKey)
+    },
+    clearScope() {
+      environment.shift()
+    },
+    getKeyInScope(name) {
+      return environment.find(scope => scope.has(name))?.get(name)
+    },
+    withScope: (fn) => async () => {
+      ctx.newScope()
+      const res = await fn()
+      ctx.clearScope()
+      return res
+    },
   }
 
   return ctx

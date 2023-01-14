@@ -123,7 +123,7 @@ export default (ctx: Ctx, args: Type[]) => ({
     return [resultKey]
   },
 
-  Bind: async () => {
+  Bind: ctx.withScope(async () => {
     const [inputTyp, chainToKind] = args
     const [resultKey] = inputTyp ? await ctx.evaluateType(ctx, inputTyp) : []
 
@@ -132,6 +132,26 @@ export default (ctx: Ctx, args: Type[]) => ({
     const resultType =
       applyFunc(ctx, chainToKind, `(${ctx.getResultExpr(resultKey)})['output']`)
     return ctx.evaluateType(ctx, resultType)
+  }),
+
+  BindTo: async () => {
+    const [labelTyp, effTyp] = args
+    const label = ctx.getTypeValue(labelTyp)
+    const [resultKey] = effTyp ? await ctx.evaluateType(ctx, effTyp) : []
+    if (resultKey) {
+      ctx.addToScope(label, resultKey)
+      return [resultKey]
+    }
+    return []
+  },
+
+  Label: async () => {
+    const label = ctx.getTypeValue(args[0])
+    const value = ctx.getKeyInScope(label)
+    if (!value) {
+      throw new Error(`Label "${label}" not found`)
+    }
+    return [value]
   },
 
   Try: async () => {
@@ -171,7 +191,7 @@ export default (ctx: Ctx, args: Type[]) => ({
     return [resultKey]
   },
 
-  Do: async () => {
+  Do: ctx.withScope(async () => {
     const [effectTyps] = args
     const effectResults = await evalList(
       ctx,
@@ -183,5 +203,5 @@ export default (ctx: Ctx, args: Type[]) => ({
       `(${ctx.getResultExpr(lastResKey)})['output']`
     )
     return [resultKey]
-  },
+  }),
 })

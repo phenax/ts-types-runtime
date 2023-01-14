@@ -29,5 +29,11 @@ export interface Ctx {
   runCustomEffect: (name: string, args: Type[]) => Promise<string[]>
   hasCustomEffect: (name: string) => boolean
 
-  evaluateType: (ctx: Ctx, effTyp: Type) => Promise<string[]>
+  evaluateType: (ctx: Ctx, effTyp: Type) => Promise<string[]>,
+
+  withScope: (fn: () => Promise<string[]>) => (() => Promise<string[]>),
+  newScope: () => void,
+  clearScope: () => void,
+  addToScope: (name: string, resKey: string) => void,
+  getKeyInScope: (name: string) => string | undefined,
 }
