@@ -10,12 +10,11 @@ export type main = [
 
   PutStringLn<'----------------'>,
   PutString<'Your name? '>,
-  Bind<ReadLine, <name extends string>() =>
-    PutStringLn<`Hello, ${name}`>>,
+  Bind<ReadLine, <name extends string>() => PutStringLn<`Hello, ${name}`>>,
 
   PutStringLn<'----------------'>,
   PutString<'Your purpose in life? '>,
   Bind<ReadLine, ResponseK>,
 
-  PutStringLn<'----------------'>,
+  PutStringLn<'----------------'>
 ]

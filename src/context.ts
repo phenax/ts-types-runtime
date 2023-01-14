@@ -116,7 +116,7 @@ export const createContext = (options: CtxOptions): Ctx => {
     evaluateType,
 
     newScope() {
-      environment.unshift(new Map)
+      environment.unshift(new Map())
     },
     addToScope(name, resKey) {
       if (environment.length === 0) ctx.newScope()
@@ -127,7 +127,7 @@ export const createContext = (options: CtxOptions): Ctx => {
       environment.shift()
     },
     getKeyInScope(name) {
-      return environment.find(scope => scope.has(name))?.get(name)
+      return environment.find((scope) => scope.has(name))?.get(name)
     },
     withScope: (fn) => async () => {
       ctx.newScope()

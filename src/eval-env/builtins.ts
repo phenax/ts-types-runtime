@@ -4,7 +4,9 @@ import { evalList } from '../util'
 
 const applyFunc = (ctx: Ctx, fn: Type | undefined, val: string): Type => {
   const resultType = (() => {
-    const baseTypes = fn?.getBaseTypes().flatMap(t => t.getSymbol()?.getName())
+    const baseTypes = fn
+      ?.getBaseTypes()
+      .flatMap((t) => t.getSymbol()?.getName())
 
     if (baseTypes?.includes('Kind1')) {
       const [_, resultNode] = ctx.createResult(
@@ -15,7 +17,9 @@ const applyFunc = (ctx: Ctx, fn: Type | undefined, val: string): Type => {
         .getProperty('output')
         ?.getTypeAtLocation(resultNode)
     } else {
-      const [_key, resultNode] = ctx.createResult(`ReturnType<${ctx.typeToString(fn)}>`)
+      const [_key, resultNode] = ctx.createResult(
+        `ReturnType<${ctx.typeToString(fn)}>`
+      )
 
       const resValueNode = resultNode
         ?.asKind(SyntaxKind.PropertySignature)
@@ -129,8 +133,11 @@ export default (ctx: Ctx, args: Type[]) => ({
 
     // TODO: Handle resultKey undefined case
 
-    const resultType =
-      applyFunc(ctx, chainToKind, `(${ctx.getResultExpr(resultKey)})['output']`)
+    const resultType = applyFunc(
+      ctx,
+      chainToKind,
+      `(${ctx.getResultExpr(resultKey)})['output']`
+    )
     return ctx.evaluateType(ctx, resultType)
   }),
 

@@ -8,21 +8,24 @@ interface PrintK extends Kind1<string> {
 }
 
 export type main = [
-  Do<[
-    BindTo<"contents", ReadFile<'./bin.js'>>,
-    PutStringLn<"------">,
-    Bind<Label<"contents">, <c extends string>() => PutStringLn<c>>,
-  ]>,
+  Do<
+    [
+      BindTo<'contents', ReadFile<'./bin.js'>>,
+      PutStringLn<'------'>,
+      Bind<Label<'contents'>, <c extends string>() => PutStringLn<c>>
+    ]
+  >,
 
-  Try<Bind<Label<"contents">, PrintK>, <e extends string>() =>
-    PutStringLn<`ERROR: ${e}`>>,
+  Try<
+    Bind<Label<'contents'>, PrintK>,
+    <e extends string>() => PutStringLn<`ERROR: ${e}`>
+  >,
 
-  PutStringLn<"-------------">,
+  PutStringLn<'-------------'>,
 
-  Bind<ReadFile<'./default.nix'>, <c extends string>() =>
-    PutStringLn<c>>,
+  Bind<ReadFile<'./default.nix'>, <c extends string>() => PutStringLn<c>>,
 
-  PutStringLn<"-------------">,
+  PutStringLn<'-------------'>,
 
   Try<
     Bind<ReadFile<'./unicorn'>, PrintK>,
