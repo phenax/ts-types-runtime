@@ -58,15 +58,13 @@ export const evaluateType = async (
     prevEnv = ctx.currentEnv
   }
 
+  if (name && ctx.hasCustomEffect(name)) {
+    return ctx.runCustomEffect(name, args)
+  }
+
   return match(name, {
-    // TODO: Allow overriding effects
     ...envEffects(ctx, args),
-
     _: async () => {
-      if (name && ctx.hasCustomEffect(name)) {
-        return ctx.runCustomEffect(name, args)
-      }
-
       console.log(ctx.typeToString(effTyp))
       throw new Error(`${name} effect is not handled`)
     },
