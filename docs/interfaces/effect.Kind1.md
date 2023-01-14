@@ -4,12 +4,28 @@
 
 [effect](../modules/effect.md).Kind1
 
+An implementation of `* -> *` higher-kinded type
+
+**`Example`**
+
+You can define a return property for the function body
+  and use `this['input']` to access the argument
+  Uses - [ApplyK](../modules/util.md#applyk)
+
+```ts
+interface SomeFunc extends Kind1<number, string> {
+  return: `Your number is ${this['input']}`,
+}
+
+type result = ApplyK<SomeFunc, 200>
+```
+
 ## Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `Inp` | `unknown` |
-| `Out` | `unknown` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `Inp` | `unknown` | The input type |
+| `Out` | `unknown` | The output type |
 
 ## Hierarchy
 
@@ -36,7 +52,7 @@
 
 #### Defined in
 
-[effect.ts:6](https://github.com/phenax/ts-types-runtime-environment/blob/6c7b4f3/stdlib/effect.ts#L6)
+[effect.ts:35](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/effect.ts#L35)
 
 ___
 
@@ -46,4 +62,4 @@ ___
 
 #### Defined in
 
-[effect.ts:7](https://github.com/phenax/ts-types-runtime-environment/blob/6c7b4f3/stdlib/effect.ts#L7)
+[effect.ts:36](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/effect.ts#L36)

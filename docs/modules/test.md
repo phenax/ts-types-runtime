@@ -8,7 +8,6 @@
 
 - [Assert](../interfaces/test.Assert.md)
 - [AssertEqualsK](../interfaces/test.AssertEqualsK.md)
-- [Config](../interfaces/test.Config.md)
 - [ShowAssertionError](../interfaces/test.ShowAssertionError.md)
 - [Test](../interfaces/test.Test.md)
 
@@ -31,4 +30,4 @@
 
 #### Defined in
 
-[test.ts:18](https://github.com/phenax/ts-types-runtime-environment/blob/6c7b4f3/stdlib/test.ts#L18)
+[test.ts:28](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/test.ts#L28)

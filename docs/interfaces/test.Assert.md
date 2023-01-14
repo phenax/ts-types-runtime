@@ -4,34 +4,29 @@
 
 [test](../modules/test.md).Assert
 
+Assert a boolean expression is true
+
+**`Throws`**
+
+if false
+
+**`Example`**
+
+Here's an example checking if `SomeValue` is not equal to [1,2,3]
+Uses - [Not](../modules/util.md#not), [Equals](../modules/util.md#equals)
+
+```ts
+Assert<Not<Equals<SomeValue, [1, 2, 3]>>>
+```
+
 ## Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `_B` | extends `boolean` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `_B` | extends `boolean` | The boolean value to assert |
 
 ## Hierarchy
 
 - [`Effect`](effect.Effect.md)
 
   ↳ **`Assert`**
-
-## Table of contents
-
-### Properties
-
-- [output](test.Assert.md#output)
-
-## Properties
-
-### output
-
-• **output**: `unknown`
-
-#### Inherited from
-
-[Effect](effect.Effect.md).[output](effect.Effect.md#output)
-
-#### Defined in
-
-[effect.ts:2](https://github.com/phenax/ts-types-runtime-environment/blob/6c7b4f3/stdlib/effect.ts#L2)

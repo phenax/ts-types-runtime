@@ -2,11 +2,21 @@ import { Do, Effect, Kind1 } from './effect'
 import { Throw, Try } from './exception'
 import { Equals } from './util'
 
-export interface Config {
-  // compileTimeTestFailures: false
-  // stopAtFailure: true // TODO: stopAtFailure
-}
-
+/**
+ * Assert a boolean expression is true
+ *
+ * @typeParam _B - The boolean value to assert
+ *
+ * @throws {"assertion error"} if false
+ *
+ * @example
+ * Here's an example checking if `SomeValue` is not equal to [1,2,3]
+ * Uses - {@link util.Not}, {@link util.Equals}
+ *
+ * ```ts
+ * Assert<Not<Equals<SomeValue, [1, 2, 3]>>>
+ * ```
+ */
 export interface Assert<_B extends boolean> extends Effect {}
 
 export interface Test<_m extends string, _effs extends Effect[]>

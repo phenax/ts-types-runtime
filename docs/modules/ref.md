@@ -23,4 +23,4 @@
 
 #### Defined in
 
-[ref.ts:6](https://github.com/phenax/ts-types-runtime-environment/blob/6c7b4f3/stdlib/ref.ts#L6)
+[ref.ts:6](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/ref.ts#L6)

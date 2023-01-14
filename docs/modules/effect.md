@@ -26,13 +26,27 @@
 
 Ƭ **Func**<`Inp`, `Out`\>: [`Kind1`](../interfaces/effect.Kind1.md)<`Inp`, `Out`\> \| <_T\>() => `Out`
 
+Generic function definition as a union of a kind and anonymous function
+
+**`Example`**
+
+In addition to defining a kind (see - [Kind1](../interfaces/effect.Kind1.md)),
+ you can also in some places, use inline lambda functions
+
+```ts
+type main = Bind<
+  ReadFile<"./file.txt">,
+  <contents extends string>() => Print<contents>
+>
+```
+
 #### Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `Inp` | `unknown` |
-| `Out` | `unknown` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `Inp` | `unknown` | The input type |
+| `Out` | `unknown` | The output type |
 
 #### Defined in
 
-[effect.ts:10](https://github.com/phenax/ts-types-runtime-environment/blob/6c7b4f3/stdlib/effect.ts#L10)
+[effect.ts:56](https://github.com/phenax/ts-types-runtime-environment/blob/78e384c/stdlib/effect.ts#L56)
