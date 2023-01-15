@@ -1,6 +1,7 @@
 # TS Types lang
 A runtime for typescript's **type system** that turns it into a **general purpose**, **purely functional** programming language with effects!
 
+
 ## Documentation
 - [stdlib reference](./docs/modules.md)
 - [examples](./examples/)
@@ -12,9 +13,8 @@ A runtime for typescript's **type system** that turns it into a **general purpos
   * error handling
   * test runner
   * mutable references
-  * evaluate js expression
+  * js ffi
   * get cli args, env vars
-  * define custom effects
 
 
 ## Example
@@ -51,6 +51,7 @@ interface HandleResponseK extends Kind1<string, Effect> {
 }
 ```
 
+
 ## Run a types-lang module
 
 Install it -
@@ -71,11 +72,14 @@ yarn exec tsr run ./examples/guess-number.ts
 ## FAQ
 
 #### Why?
-I dunno
+Why not?
 
 #### How?
-I dunno
+Why?
 
 #### What?
-I dunno
+What?
+
+#### Should I use this?
+No
 

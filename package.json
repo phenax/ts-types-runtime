@@ -13,6 +13,7 @@
     "build": "tsc",
     "cli": "ts-node src/index.ts",
     "docs": "typedoc --plugin typedoc-plugin-markdown ./stdlib/*.ts",
+    "test:stdlib": "yarn cli run ./tests/builtins.spec.ts",
     "format": "prettier --write ./**/*.ts",
     "postinstall": "yarn build",
     "prepublish": "yarn build"
